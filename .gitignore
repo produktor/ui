@@ -1,0 +1,27 @@
+# Composer libraries
+/vendor/
+
+# Node.js/NPM libraries
+/node_modules/
+
+# Assets installed by compooser
+/components/
+
+# Binaries installed by composer
+/bin/
+
+# IDEA Project files
+/.idea/
+
+# System cached images
+/assets/cache/
+
+# SQlite database files
+/data/*.sqlite
+
+# Temp files
+/tmp/
+assets/js/crypto.bundle.js
+assets/js/crypto.bundle.min.jgs
+/logs/
+node_modules
