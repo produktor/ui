@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<title>Produktor.io</title>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+	<meta http-equiv='cache-control' content='no-cache'>
+	<meta http-equiv='expires' content='0'>
+	<meta http-equiv='pragma' content='no-cache'>
+
+	<link rel="stylesheet" type="text/css" href="styles/mapbox-gl.css"/>
+	<link rel="stylesheet" type="text/css" href="styles/mapbox.css"/>
+	<link href="assets/fonts/roboto/css/roboto/roboto-fontface.css" rel="stylesheet">
+	<link href="assets/fonts/mdi/css/materialdesignicons.min.css" rel="stylesheet">
+	<link href="assets/vuetify/vuetify.css" rel="stylesheet">
+	<link href="styles/main.css" rel="stylesheet" media="all">
+
+	<script src="js/mapbox-gl.js"></script>
+	<script src="js/mapbox.js"></script>
+	<script src="js/leaflet-hash.js"></script>
+	<script src="js/wicket.js"></script>
+
+	<script src="assets/vue/vue.min.js"></script>
+	<script src="assets/vuetify/vuetify.min.js"></script>
+
+	<script src="app.js?v=1"></script>
+
+</head>
+<body>
+
+<div id="app" style="display: none">
+	<v-app id="inspire" dark>
+		<v-app-bar app dark clipped-right>
+			<v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+			<img src="images/gis-icon.png" style="height: 51px; width: 51px; margin-right: 10px" alt="" />
+			<v-toolbar-title>{{document.title}}</v-toolbar-title>
+		</v-app-bar>
+		<v-navigation-drawer v-model="drawer" app height="100%">
+			<v-list flat>
+
+        <v-list-item-title style="padding-left: 70px; font-weight: bold;padding-bottom: 5px">PRODUKTOR</v-list-item-title>
+				<v-divider></v-divider>
+
+				<template v-for="item in items">
+
+					<v-row v-if="item.heading" :key="item.heading" align="center">
+						<v-col cols="6">
+							<v-subheader v-if="item.heading">
+								{{ item.heading }}
+							</v-subheader>
+						</v-col>
+					</v-row>
+
+					<v-list-group
+						v-else-if="item.children && (!item.onDebug  || (item.onDebug && state.isDebug) ) "
+						:key="item.text"
+						v-model="item.model"
+						:prepend-icon="item.model ? 'mdi-chevron-up':'mdi-chevron-down'"
+						append-icon=""
+					>
+						<template v-slot:activator>
+							<v-list-item-content>
+								<v-list-item-title>
+									{{ item.text }}
+								</v-list-item-title>
+							</v-list-item-content>
+						</template>
+						<v-list-item
+							v-for="(child, i) in item.children"
+							:key="child.id"
+							@click="currentFrame=child"
+							:class="{ 'v-list-item--active': currentFrame && currentFrame.id === child.id }"
+							link
+						>
+							<v-list-item-action v-if="child.icon">
+								<v-icon>{{ child.icon }}</v-icon>
+							</v-list-item-action>
+							<v-list-item-content>
+								<v-list-item-title>
+									{{ child.text }}
+								</v-list-item-title>
+							</v-list-item-content>
+						</v-list-item>
+					</v-list-group>
+					<v-divider v-if="state.isDebug"></v-divider>
+				</template>
+				<v-divider v-if="!state.isDebug"></v-divider>
+
+			</v-list>
+			<div style="position: absolute; bottom: 10px; left: 10px;" id="versions">
+				<v-divider></v-divider>
+				<v-list>
+					<v-list-item>
+						<v-switch
+							prepend-icon="mdi-brightness-4"
+							v-model="state.theme"
+							hide-details
+							value="dark"
+							inset
+							label="Theme">
+						</v-switch>
+					</v-list-item>
+					<v-list-item>
+						<v-switch
+							prepend-icon="mdi-bug"
+							v-model="state.isDebug"
+							color="red"
+							hide-details
+							inset
+							label="Debugging">
+							<v-icon>mdi-invert-colors</v-icon>
+						</v-switch>
+					</v-list-item>
+					<v-list-item>
+						<v-switch
+							prepend-icon="mdi-animation"
+							v-model="state.isAnimated"
+							hide-details
+							inset
+							label="Animation">
+							<v-icon>mdi-invert-colors</v-icon>
+						</v-switch>
+					</v-list-item>
+
+					<v-list-item v-if="state.isDebug && false">
+						<v-switch
+							prepend-icon="mdi-buffer"
+							v-model="state.show3dBuildings"
+							hide-details
+							inset
+							label="3D Building">
+						</v-switch>
+					</v-list-item>
+				</v-list>
+				<v-divider style="margin-top: 20px"></v-divider>
+				<div v-if="versions && state.isDebug" id="versionBlock"
+						 style="user-select: text; margin-top: 30px; position: relative; opacity: 0.8"
+						 onmouseover="currentTarget.style.opacity = 1">
+					<div v-if="versions.map"><strong>Map</strong>: {{ versions.map }}</div>
+					<div v-if="versions.uiVersion"><strong>UI</strong>: {{ versions.uiVersion }}</div>
+					<v-btn @click="copyVersionsToClipboard()" icon style="bottom: 0; right: 0; position:absolute;">
+						<v-icon> mdi-content-copy</v-icon>
+					</v-btn>
+				</div>
+			</div>
+		</v-navigation-drawer>
+
+		<v-main>
+				<v-row no-gutters :style=" snackbarText && state.isDebug?'height: 85%':'height: 100%'" fluid>
+					<v-col v-if="currentFrame !== null" cols="6" class="flex-grow-1 flex-shrink-0"  fluid
+
+					>
+						<v-card class="pa-2" flat v-if="currentFrame" fluid >
+							<v-subheader class="pa-0">
+								<v-card-title class="headline flex-lg-nowrap">{{ currentFrame.text }}</v-card-title>
+								<v-spacer></v-spacer>
+								<v-icon @click="currentFrame = null; " right>mdi-close-circle</v-icon>
+							</v-subheader>
+							<v-divider></v-divider>
+							<component :is="currentFrame.id"
+												 :frame="currentFrame"
+												 :app="app"
+												 :countries="countries"
+												 :country="country.id"
+												 :stage="stage"
+												 v-on:select="app.map.showFeature($event)"
+							></component>
+
+
+						</v-card>
+					</v-col>
+					<v-col :cols="currentFrame?6:12" style="min-width: 100px; max-width: 100%;" class="flex-grow-1 flex-shrink-0 fill-height">
+						<div id="map" style="width: 100%; margin-bottom: 10px">
+							<div id="immo-group-logo">
+								<img class="immo-logo" src="images/gis-icon2.png" style="width: 20px;">
+							</div>
+						</div>
+					</v-col>
+				</v-row>
+				<v-row no-gutters  style="height: 15%; min-height: 150px" fluid v-if="state.isDebug && snackbarText">
+					<v-col cols="12" style="padding: 10px">
+						<template v-if="snackbarError" v-for="error in snackbarError" >
+							<v-icon class="red--text">mdi-alarm-light</v-icon> &nbsp;
+							{{ error.message }}
+							<v-divider></v-divider>
+						</template>
+
+						<div v-if="snackbarText.stage">
+							<span style="font-weight: bold">Stage</span>: {{ snackbarText.stage }}<br/>
+							<span style="font-weight: bold">Request time</span>: {{ snackbarText.queryTime }}<br/>
+							<span style="font-weight: bold">Results</span>: <span v-if="snackbarText.features">{{ snackbarText.features.length }}</span>
+						</div>
+
+						<div v-if="snackbarText && snackbarText.curlRequest">
+							<v-btn @click="copyCurlCommandToClipboard()" icon>
+								<v-icon> mdi-content-copy</v-icon>
+							</v-btn>
+							<code id="curlCommand"
+										style="margin-left: 40px; margin-top: -40px; display: block; overflow: auto; white-space: nowrap;  ">{{ snackbarText.curlRequest }}</code>
+						</div>
+					</v-col>
+				</v-row>
+		</v-main>
+
+
+		<v-navigation-drawer
+			app
+			clipped
+			right
+			width="350px"
+			v-if="currentFeature"
+			style="padding: 14px;"
+		>
+			<template>
+				<template v-if="currentFeature.properties">
+					<h3> Properties</h3>
+					<v-divider></v-divider>
+					<v-simple-table class="key-value">
+						<template v-slot:default>
+							<tbody>0
+							<tr v-for="(item, index) in  currentFeature.properties">
+								<td class="key-cell">{{ index }}:</td>
+								<td class="key-value">{{ item }}</td>
+							</tr>
+							</tbody>
+						</template>
+					</v-simple-table>
+				</template>
+			</template>
+
+		</v-navigation-drawer>
+
+	</v-app>
+</div>
+</body>
+</html>
+
+
