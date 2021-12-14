@@ -23,7 +23,7 @@ document.onreadystatechange = async () => {
         {
           icon: 'mdi-arrow-down-bold-box',
           text: 'Найти',
-          id:   'product-receive'
+          id:   'product-search'
         }, {
           icon: 'mdi-arrow-up-bold-box',
           text: 'Отдать',
@@ -212,9 +212,8 @@ document.onreadystatechange = async () => {
 
       // Countries
       countries: [
+        {id: 'ES', label: 'Spain'},
         {id: 'DE', label: 'Germany'},
-        {id: 'AT', label: 'Austria'},
-        {id: 'CH', label: 'Switzerland'}
       ],
 
       // Current country in
@@ -241,6 +240,37 @@ document.onreadystatechange = async () => {
     },
 
     methods: {
+
+      /**
+       * Search subject
+       *
+       * @param {function} onFeature
+       * @param {string|RegExp} subject
+       */
+      search(subject, onFeature) {
+        let feature;
+        app.net.request(`nominatim.search.json?search${subject}`, fetcher => {
+          fetcher.then(response => {
+
+            if(!response || !response.result)
+              return;
+
+            let result = response.result;
+            let wktReader = new Wkt.Wkt(result.wktGeometry);
+            // Remove WKT Geometry. Is to big...
+            delete result.wktGeometry;
+            feature = {
+              type:       "Feature",
+              id:         app.geo.utils.genUUID(),
+              geometry:   wktReader.toJson(),
+              properties: result
+            };
+
+          }).finally(() =>
+            onFeature(feature)
+          );
+        });
+      },
 
       /**
        * Get location by ID
@@ -281,29 +311,6 @@ document.onreadystatechange = async () => {
 
           }).finally(() =>
             onFeature(feature)
-          );
-        });
-      },
-
-      /**
-       * Get Immonet geo info by location ID
-       *
-       * @param {int} locationId
-       * @param {function} onResult
-       */
-      getImmonetGeoInfo(locationId, onResult) {
-        let result;
-
-        app.net.request(`api.php?act=immonetgeobylocationid&stage=${this.stage}&id=${locationId}`, fetcher => {
-          fetcher.then(response => {
-
-            if(!response || !response.result)
-              return;
-
-            result = response.result;
-
-          }).finally(() =>
-            onResult(result)
           );
         });
       },
@@ -355,28 +362,6 @@ document.onreadystatechange = async () => {
         });
       },
 
-      /**
-       * Get on premise location by immowelt geo ID
-       *
-       * @param immoweltGeoId
-       * @param {function} onResult
-       */
-      getImmoweltGeoInfoFromOnPremise(immoweltGeoId,  onResult) {
-        let result;
-
-        app.net.request(`api.php?act=getimmoweltgeoinfofromonpremise&stage=${this.stage}&id=${immoweltGeoId}`, fetcher => {
-          fetcher.then(response => {
-
-            result = response.result;
-
-            if(!response || !response.result)
-              return;
-
-          }).finally(() =>
-            onResult(result)
-          );
-        });
-      },
 
       // Get update version info
       updateInfo() {
@@ -472,7 +457,7 @@ document.onreadystatechange = async () => {
 
   app.map = map = new mapboxgl.Map({
     container:           'map',
-    style:               'styles/map.style.json',
+    style:               'styles/map.style.json?x='+Math.random(),
     hash:                true, // antialias: true,
     refreshExpiredTiles: false,
     boxZoom:             false,
