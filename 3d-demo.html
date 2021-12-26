@@ -97,6 +97,8 @@
       this.renderer.autoClear = false;
     },
     render:        function(gl, matrix) {
+      modelTransform.rotateY += 0.1
+      console.log("re render")
       let rotationX = new THREE.Matrix4().makeRotationAxis(
         new THREE.Vector3(1, 0, 0),
         modelTransform.rotateX
