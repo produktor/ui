@@ -65,7 +65,10 @@ export function request(url, callBack, init) {
 function _getJson(url, init) {
   abortController = new AbortController();
   if(!init) {
-    init = {cache: "no-store"};
+    init = {
+      "cache":  "no-store",
+      "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9"
+    };
   }
 
   init.signal = abortController.signal;

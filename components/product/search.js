@@ -13,28 +13,8 @@
       'stage':     {}
     },
     data:     () => ({
-      sortName:  "",
-      sortNames: [
-        {'label': 'Unsort', id: ''},
-        {'label': 'Street', id: 'street'},
-        {'label': 'Postal code', id: 'postcode'},
-        {'label': 'House number', id: 'housenumber'},
-        {'label': 'Location ID', id: 'locationid'},
-        {'label': 'Sub-Type', id: 'subtype'},
-        {'label': 'Administration', id: 'administration'},
-        {'label': 'Location Type ID', id: 'locationtypeid'},
-        {'label': 'Suburb', id: 'suburb'},
-        {'label': 'County', id: 'county'},
-        {'label': 'City', id: 'city'},
-        {'label': 'State', id: 'state'},
-      ],
-      sortTypes: [
-        {'label': 'Ascending', id: 'asc'},
-        {'label': 'Descending', id: 'desc'},
-      ],
-      sortType:  'asc',
-      limit:     50,
-      offset:    0,
+      limit:  50,
+      offset: 0,
 
       displayNameFormat:  "",
       displayNameFormats: [
@@ -63,7 +43,7 @@
                     :loading="isSearching"
                     :items="results"
                     :search-input.sync="search"
-                    label="Место"
+                    label="search subject e.g. 'Iphone, XS, 300'"
                     prepend-icon="mdi-city"
                     persistent-hint
                     hide-no-data
@@ -83,77 +63,13 @@
                     </template>
                     <template slot="item" slot-scope="data">
                       <template v-if="data && data.item">
-                        {{ data.item.properties.displayname }} <span
-                        class="grey--text lighten-4"
-                        v-if="data.item.properties.category" style="text-transform: capitalize">&nbsp;({{ data.item.properties.category }})</span>
+                        {{ data.item.properties.display_name }}
                       </template>
                     </template>
                   </v-autocomplete>
                 </form>
 
-                <v-divider></v-divider>
 
-
-                <form class="v-card__text" onsubmit="return false">
-                  <v-row>
-                    <v-col
-                      :md="sortName===''?6:3"
-                    >
-                      <v-select
-                        prepend-icon="mdi-sort-variant"
-                        v-model="sortName"
-                        label="Sort by"
-                        :items="sortNames"
-                        :return-object="false"
-                        persistent-hint
-                        item-text="label"
-                        item-value="id"
-                      ></v-select>
-                    </v-col>
-                    <v-col
-                      v-if="sortName!==''"
-
-                    >
-                      <v-select
-                        v-model="sortType"
-                        label="Order"
-                        :items="sortTypes"
-                        :return-object="false"
-                        persistent-hint
-                        item-text="label"
-                        item-value="id"
-                      ></v-select>
-                    </v-col>
-                    <v-col
-                    >
-                      <v-select
-                        prepend-icon="mdi-arrow-collapse-left"
-                        v-model="offset"
-                        :items="[0, 10,20,30,50]"
-                        :return-object="false"
-                        label="Offset"
-                        persistent-hint
-                        item-text="label"
-                        item-value="id"
-                      ></v-select>
-                    </v-col>
-                    <v-col
-                    >
-                      <v-select
-                        append-outer-icon="mdi-arrow-collapse-right"
-                        v-model="limit"
-                        :items="[10,20,30,50]"
-                        :return-object="false"
-                        label="Limit"
-                        persistent-hint
-                        item-text="label"
-                        item-value="id"
-                      ></v-select>
-                    </v-col>
-                  </v-row>
-                </form>
-
-                <v-divider></v-divider>
                 </div>
               `,
 
@@ -161,24 +77,12 @@
 
       // on item select
       result(feature) {
-        return;
-
         if(!feature || !feature.properties) return;
-
-        if(me.loadPolygon === "1") {
-          me.app.vue.getLocation(feature.properties.locationid, location => {
-            location.properties = feature.properties;
-            this.$emit('select', location);
-          });
-        } else {
-          this.$emit('select', feature);
-        }
+        this.$emit('select', feature);
       },
 
       // on input
       search: (value, old) => {
-
-        return;
 
         // prevent the same search
         if(value === old) {
@@ -191,23 +95,15 @@
           return;
         }
 
-        me.isSearching = true;
-
         // No search without country and any chars
-        if(value && value.length < 1 && !this.country) return;
+        if(value && value.length < 1) return;
 
-        me.results = [];
-
-        let sort = '';
-
-        if(me.sortName !== '') {
-          if(me.sortType !== '') {
-            sort += me.sortType === 'asc' ? '+' : '-';
-          }
-          sort += me.sortName;
-        }
-
-        let url = 'api' + app.net.encode(value);
+        me.isSearching = true;
+        let url = " https://nominatim.openstreetmap.org/search.php" +
+                  "?country=es" +
+                  "&state=Santa+Cruz+de+Tenerife" +
+                  "&format=geojson" +
+                  "&city=" + encodeURIComponent(value);
 
         app.net.request(url, fetcher => fetcher
           .then(response => {

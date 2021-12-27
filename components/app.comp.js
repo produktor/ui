@@ -2,7 +2,7 @@
 
   let me;
 
-  Vue.component('product-serve', {
+  Vue.component('product-search', {
     mounted() {
       me = this;
     },
@@ -13,12 +13,33 @@
       'stage':     {}
     },
     data:     () => ({
+      sortName:  "",
+      sortNames: [
+        {'label': 'Unsort', id: ''},
+        {'label': 'Street', id: 'street'},
+        {'label': 'Postal code', id: 'postcode'},
+        {'label': 'House number', id: 'housenumber'},
+        {'label': 'Location ID', id: 'locationid'},
+        {'label': 'Sub-Type', id: 'subtype'},
+        {'label': 'Administration', id: 'administration'},
+        {'label': 'Location Type ID', id: 'locationtypeid'},
+        {'label': 'Suburb', id: 'suburb'},
+        {'label': 'County', id: 'county'},
+        {'label': 'City', id: 'city'},
+        {'label': 'State', id: 'state'},
+      ],
+      sortTypes: [
+        {'label': 'Ascending', id: 'asc'},
+        {'label': 'Descending', id: 'desc'},
+      ],
+      sortType:  'asc',
+      limit:     50,
+      offset:    0,
+
       displayNameFormat:  "",
       displayNameFormats: [
-        {'label': 'Delivery', id: 'delivery'},
-        {'label': 'Exchange', id: 'обмен'},
-        {'label': 'Sport activity', id: 'pricemap'},
-        {'label': 'Other', id: ""},
+        {'label': 'Standard', id: ""},
+        {'label': 'Pricemap', id: 'pricemap'},
       ],
 
       country:     'DE',
@@ -42,8 +63,7 @@
                     :loading="isSearching"
                     :items="results"
                     :search-input.sync="search"
-
-                    label="Place"
+                    label="Место"
                     prepend-icon="mdi-city"
                     persistent-hint
                     hide-no-data
@@ -69,17 +89,62 @@
                       </template>
                     </template>
                   </v-autocomplete>
+                </form>
 
+                <v-divider></v-divider>
+
+
+                <form class="v-card__text" onsubmit="return false">
                   <v-row>
                     <v-col
-                      :md="12"
+                      :md="sortName===''?6:3"
                     >
                       <v-select
-                        prepend-icon="mdi-monitor"
-                        v-model="displayNameFormat"
-                        label="Service type"
-                        :items="displayNameFormats"
+                        prepend-icon="mdi-sort-variant"
+                        v-model="sortName"
+                        label="Sort by"
+                        :items="sortNames"
                         :return-object="false"
+                        persistent-hint
+                        item-text="label"
+                        item-value="id"
+                      ></v-select>
+                    </v-col>
+                    <v-col
+                      v-if="sortName!==''"
+
+                    >
+                      <v-select
+                        v-model="sortType"
+                        label="Order"
+                        :items="sortTypes"
+                        :return-object="false"
+                        persistent-hint
+                        item-text="label"
+                        item-value="id"
+                      ></v-select>
+                    </v-col>
+                    <v-col
+                    >
+                      <v-select
+                        prepend-icon="mdi-arrow-collapse-left"
+                        v-model="offset"
+                        :items="[0, 10,20,30,50]"
+                        :return-object="false"
+                        label="Offset"
+                        persistent-hint
+                        item-text="label"
+                        item-value="id"
+                      ></v-select>
+                    </v-col>
+                    <v-col
+                    >
+                      <v-select
+                        append-outer-icon="mdi-arrow-collapse-right"
+                        v-model="limit"
+                        :items="[10,20,30,50]"
+                        :return-object="false"
+                        label="Limit"
                         persistent-hint
                         item-text="label"
                         item-value="id"
@@ -89,36 +154,6 @@
                 </form>
 
                 <v-divider></v-divider>
-
- <v-row>
-
-    <v-col>
-      <v-sheet height="400">
-
-        Calendar
-        <v-calendar
-
-          category-show-all
-          ref="calendar"
-          color="primary"
-          type="week"
-        ></v-calendar>
-      </v-sheet>
-    </v-col>
-  </v-row>
-
-                <v-divider></v-divider>
-
-                <form class="v-card__text" onsubmit="return false">
-
-                  <v-checkbox
-                    v-if="app.vue.state.isDebug"
-                    v-model="app.vue.state.isDebug && loadPolygon"
-                    value="1"
-                    label="Include a service in general search?"
-                    type="checkbox"
-                  ></v-checkbox>
-                </form>
                 </div>
               `,
 
@@ -137,11 +172,12 @@
           });
         } else {
           this.$emit('select', feature);
-        }
+        }Giving product away
       },
 
       // on input
       search: (value, old) => {
+
         return;
 
         // prevent the same search
@@ -164,12 +200,10 @@
 
         let sort = '';
 
-        if(me.sortName !== '') {
-          if(me.sortType !== '') {
-            sort += me.sortType === 'asc' ? '+' : '-';
-          }
-          sort += me.sortName;
-        }
+        let hastSortName = me.sortName !== '';
+        let hasType = hastSortName me.sortType !== '';
+        hastSortName && sort += me.sortType === 'asc' ? '+' : '-';
+        hastSortName && sort += me.sortName;
 
         let url = 'api' + app.net.encode(value);
 

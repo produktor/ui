@@ -2,7 +2,7 @@
 
   let me;
 
-  Vue.component('info-project', {
+  Vue.component('info-terms', {
     mounted() {
       me = this;
     },
@@ -15,12 +15,12 @@
       event: 'select'
     },
     template: `
-                <div>
-                <form>
-                  <a href="https://github.com/produktor/web" target="_blank">Produktor info portal</a>
+      <div>
+      <form>
+        To be done.
+      </form>
+      </div>
+    `,
 
-                </form>
-                </div>
-              `,
   });
 })();

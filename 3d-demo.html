@@ -59,6 +59,8 @@
     scale: modelAsMercatorCoordinate.meterInMercatorCoordinateUnits()
   };
 
+
+
   // configuration of the custom layer for a 3D model per the CustomLayerInterface
   let customLayer = {
     id:            '3d-model',
@@ -97,21 +99,12 @@
       this.renderer.autoClear = false;
     },
     render:        function(gl, matrix) {
-      modelTransform.rotateY += 0.1
-      console.log("re render")
-      let rotationX = new THREE.Matrix4().makeRotationAxis(
-        new THREE.Vector3(1, 0, 0),
-        modelTransform.rotateX
-      );
-      let rotationY = new THREE.Matrix4().makeRotationAxis(
-        new THREE.Vector3(0, 1, 0),
-        modelTransform.rotateY
-      );
-      let rotationZ = new THREE.Matrix4().makeRotationAxis(
-        new THREE.Vector3(0, 0, 1),
-        modelTransform.rotateZ
-      );
+      // debugger
 
+      modelTransform.translateX +=  0.00000001
+      modelTransform.translateY +=  0.00000001
+      // modelTransform.translateY +=  0.00000000000000001
+      // modelTransform.translateX =  0.4547186111111111
       let m = new THREE.Matrix4().fromArray(matrix);
       let l = new THREE.Matrix4()
         .makeTranslation(
@@ -126,9 +119,18 @@
             modelTransform.scale
           )
         )
-        .multiply(rotationX)
-        .multiply(rotationY)
-        .multiply(rotationZ);
+        .multiply(new THREE.Matrix4().makeRotationAxis(
+          new THREE.Vector3(1, 0, 0),
+          modelTransform.rotateX
+        ))
+        .multiply(new THREE.Matrix4().makeRotationAxis(
+          new THREE.Vector3(0, 1, 0),
+          modelTransform.rotateY
+        ))
+        .multiply(new THREE.Matrix4().makeRotationAxis(
+          new THREE.Vector3(0, 0, 1),
+          modelTransform.rotateZ
+        ));
 
       this.camera.projectionMatrix = m.multiply(l);
       this.renderer.state.reset();
@@ -137,8 +139,17 @@
     }
   };
 
+  function rotateCamera(timestamp) {
+    // clamp the rotation between 0 -360 degrees
+    // Divide timestamp by 100 to slow rotation to ~10 degrees / sec
+    map.rotateTo((timestamp / 100) % 360, { duration: 0 });
+    // Request the next frame of the animation.
+    requestAnimationFrame(rotateCamera);
+  }
+
   map.on('style.load', function() {
     map.addLayer(customLayer, 'place_label_city');
+    rotateCamera(0);
   });
 </script>
 

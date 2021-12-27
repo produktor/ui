@@ -1,0 +1,1 @@
+"https://nominatim.openstreetmap.org/search.php?q=Calle%20san%20francisco%2C%20Tenerife&polygon_geojson=1&format=jsonv2" | jq

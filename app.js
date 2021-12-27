@@ -18,15 +18,15 @@ document.onreadystatechange = async () => {
     {
       icon:       'mdi-chevron-up',
       'icon-alt': 'mdi-chevron-down',
-      text:       'Продукты',
+      text:       'Products',
       children:   [
         {
           icon: 'mdi-arrow-down-bold-box',
-          text: 'Найти',
+          text: 'Find a product',
           id:   'product-search'
         }, {
           icon: 'mdi-arrow-up-bold-box',
-          text: 'Отдать',
+          text: 'Give away',
           id:   'product-serve'
         }
       ],
@@ -34,18 +34,18 @@ document.onreadystatechange = async () => {
     {//                 <v-icon>mdi-map</v-icon>
       icon:       'mdi-chevron-up',
       'icon-alt': 'mdi-chevron-down',
-      text:       'Сервис',
+      text:       'Service',
       onDebug:    true,
       children:   [
 
         {
           icon: 'mdi-arrow-down-bold-box-outline',
-          text: 'Найти',
+          text: 'Find a service',
           id:   'service-receive'
         },
         {
           icon: 'mdi-arrow-up-bold-box-outline',
-          text: 'Предоставить',
+          text: 'Provide a service',
           id:   'service-serve'
         }
       ],
@@ -53,21 +53,26 @@ document.onreadystatechange = async () => {
     {
       icon:       'mdi-chevron-dio',
       'icon-alt': 'mdi-chevron-down',
-      text:       'Инфо',
+      text:       'Project',
       children:   [
+        // {
+        //   icon: 'mdi-head-question-outline',
+        //   text: 'FAQ',
+        //   id:   'info-questions'
+        // },
         {
-          icon: 'mdi-head-question-outline',
-          text: 'Вопросы',
-            id:   'info-questions'
+          icon: 'mdi-book-open-variant',
+          text: 'Terms of use',
+          id:   'info-terms'
         },
         {
           icon: 'mdi-information',
-          text: 'О Проекте',
+          text: 'About',
           id:   'info-project'
         },
         {
           icon: 'mdi-copyright',
-          text: 'Лицензия',
+          text: 'License',
           id:   'info-license'
         }
       ]
@@ -280,14 +285,14 @@ document.onreadystatechange = async () => {
        */
       getLocation(id, onFeature) {
         let wktReader = new Wkt.Wkt(result.wktGeometry);
-        onFeature( feature = {
+        onFeature(feature = {
           type:       "Feature",
           id:         app.geo.utils.genUUID(),
           geometry:   wktReader.toJson(),
           properties: {
             id: id
           }
-        })
+        });
         return;
         let feature;
         app.net.request(`api.php?act=location&stage=${this.stage}&id=${id}`, fetcher => {
@@ -362,13 +367,12 @@ document.onreadystatechange = async () => {
         });
       },
 
-
       // Get update version info
       updateInfo() {
         this.versions = {
           "uiVersion": "0.1.12b",
-          "map": "Canary 2021.12"
-        }
+          "map":       "Canary 2021.12"
+        };
       },
 
       // Copy versions to clipboard
@@ -457,15 +461,15 @@ document.onreadystatechange = async () => {
 
   app.map = map = new mapboxgl.Map({
     container:           'map',
-    style:               'styles/map.style.json?x='+Math.random(),
+    style:               'styles/map.style.json?x=' + Math.random(),
     hash:                true, // antialias: true,
     refreshExpiredTiles: false,
     boxZoom:             false,
     // 10.73/28.354/-16.4001/-98.4/60
-    center:              [-16.5262,28.1597],
-    zoom:                11.05,
-    bearing:             0,
-    pitch:               55
+    center:  [-16.5262, 28.1597],
+    zoom:    11.05,
+    bearing: 0,
+    pitch:   55
   });
 
   function popUp(lon, lat, html) {
@@ -564,8 +568,6 @@ document.onreadystatechange = async () => {
       data: null
     });
 
-
-
     if(app.vue.state.theme === "dark") {
       map.addLayer({
         'id':     'nominatim-regions',
@@ -595,18 +597,18 @@ document.onreadystatechange = async () => {
       type:   "symbol",
       source: 'nominatim-regions',
       layout: {
-        "text-field":         "{displayname}{name}\n{administration}",
-        "text-font":          ["Open Sans Bold"],
-        "text-size":          20,
+        "text-field": "{displayname}{name}\n{administration}",
+        "text-font":  ["Open Sans Bold"],
+        "text-size":  20,
         // "text-offset":        [0, 0.5],
-        "icon-size":          1,
-        "text-anchor":        "center",
-        "text-justify": "center",
-        "text-max-width":     30,
+        "icon-size":      1,
+        "text-anchor":    "center",
+        "text-justify":   "center",
+        "text-max-width": 30,
         // "icon-allow-overlap": true,
         // "icon-optional":      true,
         "icon-pitch-alignment": "viewport",
-        "icon-text-fit": "none",
+        "icon-text-fit":        "none",
         // "text-offset":  [0, 10],
         // "text-rotation-alignment": "map"
         // "symbol-placement": "line-center",

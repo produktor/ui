@@ -43,7 +43,7 @@
                     :items="results"
                     :search-input.sync="search"
 
-                    label="Место"
+                    label="Place"
                     prepend-icon="mdi-city"
                     persistent-hint
                     hide-no-data
@@ -95,7 +95,7 @@
     <v-col>
       <v-sheet height="400">
 
-        Календарь
+        Calendar
         <v-calendar
 
           category-show-all
