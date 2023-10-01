@@ -80,13 +80,23 @@
       this.scene.add(directionalLight2);
 
       // use the three.js GLTF loader to add the 3D model to the three.js scene
-      let loader = new THREE.GLTFLoader();
+      // let loader = new THREE.GLTFLoader();
+      // loader.load(
+      //   'data/34M_17.gltf',
+      //   function(gltf) {
+      //     this.scene.add(gltf.scene);
+      //   }.bind(this)
+      // );
+
+      // use the three.js GLTF loader to add the 3D model to the three.js scene
+      const loader = new THREE.GLTFLoader();
       loader.load(
-        'data/34M_17.gltf',
-        function(gltf) {
-          this.scene.add(gltf.scene);
-        }.bind(this)
+              'https://docs.mapbox.com/mapbox-gl-js/assets/34M_17/34M_17.gltf',
+              (gltf) => {
+                this.scene.add(gltf.scene);
+              }
       );
+
       this.map = map;
 
       // use the MapLibre GL JS map canvas for three.js
@@ -101,8 +111,8 @@
     render:        function(gl, matrix) {
       // debugger
 
-      modelTransform.translateX +=  0.00000001
-      modelTransform.translateY +=  0.00000001
+      modelTransform.translateX -=  0.000000002
+      modelTransform.translateY +=  0.000000001
       // modelTransform.translateY +=  0.00000000000000001
       // modelTransform.translateX =  0.4547186111111111
       let m = new THREE.Matrix4().fromArray(matrix);
