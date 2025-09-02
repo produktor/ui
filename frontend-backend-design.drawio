@@ -1,0 +1,67 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36" version="28.1.2">
+  <diagram name="Page-1" id="3mtRdg6Twal0-GVOtVKh">
+    <mxGraphModel dx="2916" dy="796" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="Vm44wllQq23MDlGrgDRP-3" value="Web_App (MUI)" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-90" y="200" width="970" height="580" as="geometry" />
+        </mxCell>
+        <mxCell id="Vm44wllQq23MDlGrgDRP-4" value="Analytics" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="120" y="400" width="200" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="Vm44wllQq23MDlGrgDRP-5" value="Profile" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="360" y="400" width="200" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="Vm44wllQq23MDlGrgDRP-6" value="Connectros" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="600" y="400" width="220" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="Vm44wllQq23MDlGrgDRP-10" value="Back-End" style="swimlane;whiteSpace=wrap;html=1;startSize=30;" vertex="1" parent="1">
+          <mxGeometry x="100" y="1030" width="330" height="440" as="geometry" />
+        </mxCell>
+        <mxCell id="Vm44wllQq23MDlGrgDRP-11" value="Controllers / API (Input/Output/Verification)" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="Vm44wllQq23MDlGrgDRP-10">
+          <mxGeometry y="40" width="330" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Vm44wllQq23MDlGrgDRP-14" value="Services(Buisness-Logic)" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="Vm44wllQq23MDlGrgDRP-10">
+          <mxGeometry y="130" width="330" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Vm44wllQq23MDlGrgDRP-15" value="Repositories" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="Vm44wllQq23MDlGrgDRP-10">
+          <mxGeometry y="220" width="330" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="Vm44wllQq23MDlGrgDRP-9" value="Postgres" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" vertex="1" parent="Vm44wllQq23MDlGrgDRP-15">
+          <mxGeometry x="30" y="70" width="60" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Vm44wllQq23MDlGrgDRP-16" value="Minio" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" vertex="1" parent="Vm44wllQq23MDlGrgDRP-15">
+          <mxGeometry x="100" y="70" width="60" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Vm44wllQq23MDlGrgDRP-26" value="Modules" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="30" y="370" width="810" height="380" as="geometry" />
+        </mxCell>
+        <mxCell id="Vm44wllQq23MDlGrgDRP-27" value="Data-Service Module-Repo" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="470" y="810" width="340" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="Vm44wllQq23MDlGrgDRP-17" value="Data-Service" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="Vm44wllQq23MDlGrgDRP-27">
+          <mxGeometry x="20" y="40" width="140" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="Vm44wllQq23MDlGrgDRP-18" value="/users" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="Vm44wllQq23MDlGrgDRP-17">
+          <mxGeometry y="30" width="140" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Vm44wllQq23MDlGrgDRP-19" value="/settings" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="Vm44wllQq23MDlGrgDRP-17">
+          <mxGeometry y="60" width="140" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Vm44wllQq23MDlGrgDRP-20" value="/controllers" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="Vm44wllQq23MDlGrgDRP-17">
+          <mxGeometry y="90" width="140" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Vm44wllQq23MDlGrgDRP-21" value="WebSocket" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="Vm44wllQq23MDlGrgDRP-27">
+          <mxGeometry x="180" y="40" width="140" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="Vm44wllQq23MDlGrgDRP-22" value="/sql" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="Vm44wllQq23MDlGrgDRP-21">
+          <mxGeometry y="30" width="140" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Vm44wllQq23MDlGrgDRP-23" value="on(data)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="Vm44wllQq23MDlGrgDRP-21">
+          <mxGeometry y="60" width="140" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
