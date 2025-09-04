@@ -5,7 +5,7 @@
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <mxCell id="WhHDiYqPfNyPdKwV3P8i-1" value="Front-Mui" style="swimlane;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
-          <mxGeometry x="-150" y="150" width="1370" height="860" as="geometry" />
+          <mxGeometry x="-150" y="150" width="840" height="860" as="geometry" />
         </mxCell>
         <mxCell id="WhHDiYqPfNyPdKwV3P8i-4" value="Main-Navigation" style="swimlane;whiteSpace=wrap;html=1;startSize=23;" parent="WhHDiYqPfNyPdKwV3P8i-1" vertex="1">
           <mxGeometry x="30" y="60" width="130" height="210" as="geometry" />
@@ -20,21 +20,24 @@
           <mxGeometry x="10" y="60" width="110" height="40" as="geometry" />
         </mxCell>
         <mxCell id="WhHDiYqPfNyPdKwV3P8i-6" value="Page-Container" style="swimlane;whiteSpace=wrap;html=1;" parent="WhHDiYqPfNyPdKwV3P8i-1" vertex="1">
-          <mxGeometry x="170" y="120" width="1150" height="730" as="geometry" />
+          <mxGeometry x="170" y="130" width="660" height="720" as="geometry" />
         </mxCell>
         <mxCell id="WhHDiYqPfNyPdKwV3P8i-13" value="TradingPage" style="swimlane;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="WhHDiYqPfNyPdKwV3P8i-6" vertex="1">
-          <mxGeometry x="20" y="40" width="1110" height="680" as="geometry" />
+          <mxGeometry x="20" y="40" width="630" height="680" as="geometry" />
         </mxCell>
         <mxCell id="WhHDiYqPfNyPdKwV3P8i-51" value="analytic-chart" style="swimlane;whiteSpace=wrap;html=1;" parent="WhHDiYqPfNyPdKwV3P8i-13" vertex="1">
-          <mxGeometry x="15" y="30" width="1065" height="640" as="geometry" />
+          <mxGeometry x="15" y="30" width="605" height="640" as="geometry" />
+        </mxCell>
+        <mxCell id="6Mem3ri6b4XV6K1-fHUd-57" value="" style="sketch=0;aspect=fixed;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=#B0BAC7;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fillColor=#eeeeee;shape=mxgraph.mscae.general.graph" vertex="1" parent="WhHDiYqPfNyPdKwV3P8i-51">
+          <mxGeometry y="25" width="600" height="600" as="geometry" />
         </mxCell>
         <mxCell id="WhHDiYqPfNyPdKwV3P8i-7" value="https://alg0.trade/trading/instruments" style="rounded=0;whiteSpace=wrap;html=1;align=left;" parent="WhHDiYqPfNyPdKwV3P8i-1" vertex="1">
-          <mxGeometry x="30" y="30" width="590" height="20" as="geometry" />
+          <mxGeometry x="30" y="30" width="800" height="20" as="geometry" />
         </mxCell>
-        <mxCell id="WhHDiYqPfNyPdKwV3P8i-46" value="top-navigation" style="swimlane;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="WhHDiYqPfNyPdKwV3P8i-1" vertex="1">
-          <mxGeometry x="170" y="50" width="1070" height="60" as="geometry" />
+        <mxCell id="WhHDiYqPfNyPdKwV3P8i-46" value="top-navigation" style="swimlane;whiteSpace=wrap;html=1;fillColor=#cce5ff;strokeColor=#36393d;" parent="WhHDiYqPfNyPdKwV3P8i-1" vertex="1">
+          <mxGeometry x="170" y="60" width="660" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="WhHDiYqPfNyPdKwV3P8i-59" value="Trading / Instruments" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="WhHDiYqPfNyPdKwV3P8i-46" vertex="1">
+        <mxCell id="WhHDiYqPfNyPdKwV3P8i-59" value="Trading / Instruments" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1;fillColor=#85995A;strokeColor=#36393d;" parent="WhHDiYqPfNyPdKwV3P8i-46" vertex="1">
           <mxGeometry x="20" y="30" width="140" height="30" as="geometry" />
         </mxCell>
         <mxCell id="WhHDiYqPfNyPdKwV3P8i-52" value="Routing-Manager" style="swimlane;whiteSpace=wrap;html=1;fillColor=#cce5ff;strokeColor=#36393d;" parent="1" vertex="1">
