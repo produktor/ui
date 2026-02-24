@@ -1,24 +1,18 @@
 "use strict";
 
-document.onreadystatechange = async () => {
-  if(document.readyState !== "complete") {
-    return;
-  }
+document.onreadystatechange = async () => { if(document.readyState !==
+  "complete") { return; }
 
-  let vue, map;
-  let layerName = 'immo';
-  let popup;
+  let vue, map; let layerName = 'immo'; let popup;
 
-  // Import components
-  // (await import('./components/button-counter.js')).default();
-  Vue.config.silent = false;
+  // Import components (await
+  // import('./components/button-counter.js')).default(); Vue.config.silent =
+  // false;
 
   let menuItems = [
 
-    {
-      icon:       'mdi-chevron-up',
-      'icon-alt': 'mdi-chevron-down',
-      text:       'Products',
+    { icon:       'mdi-chevron-up', 'icon-alt': 'mdi-chevron-down', text:
+      'Products',
       children:   [
         {
           icon: 'mdi-arrow-down-bold-box',

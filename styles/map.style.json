@@ -10,10 +10,9 @@
   "pitch": 0,
   "sprite": "https://produktor.github.io/ui/styles/osm-liberty-gl-style/sprites/osm-liberty",
   "sources": {
-
     "openmaptiles": {
       "type": "vector",
-      "url": "https://produktor.github.io/map-canary/index.json?x=1"
+      "url": "https://tenerife.baby/data/planet-231204.osm.renumbered.json"
     },
     "maplibre": {
       "url": "https://demotiles.maplibre.org/tiles/tiles.json",
@@ -537,8 +536,7 @@
       "maxzoom": 24,
       "minzoom": 2,
       "source-layer": "centroids"
-    }
-,
+    },
     {
       "id": "landuse-residential",
       "type": "fill",
@@ -1678,8 +1676,6 @@
         "text-halo-width": 2
       }
     },
-
-
     {
       "id": "poi_z16",
       "type": "symbol",
@@ -1855,9 +1851,6 @@
         ]
       ]
     },
-
-
-
     {
       "id": "place_label_other",
       "type": "symbol",
