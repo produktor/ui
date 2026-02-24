@@ -10,14 +10,11 @@
   "pitch": 0,
   "sprite": "https://produktor.github.io/ui/styles/osm-liberty-gl-style/sprites/osm-liberty",
   "sources": {
-    "openmaptiles": {
+    "eslidertiles":{
       "type": "vector",
-      "url": "https://produktor.github.io/map-canary/index.json?x=1"
-    },
-    "maplibre": {
-      "url": "https://demotiles.maplibre.org/tiles/tiles.json",
-      "type": "vector"
+      "url": "https://tenerife.baby/data/planet-231204.osm.renumbered.json"
     }
+
   },
   "glyphs": "assets/fonts/map-fonts/{fontstack}/{range}.pbf",
   "layers": [
