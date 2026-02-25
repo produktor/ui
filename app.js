@@ -513,14 +513,14 @@ document.onreadystatechange = async () => { if(document.readyState !==
   app.map = map = new maplibregl.Map({
     container:           'map',
     style:               style,
-    hash:                true, // antialias: true,
+    hash:                true,
     refreshExpiredTiles: false,
     boxZoom:             false,
-    // 10.73/28.354/-16.4001/-98.4/60
-    center:  [-16.5262, 28.1597],
-    zoom:    11.05,
-    bearing: 0,
-    pitch:   55
+    maxPitch:            85,
+    center:              [-16.5262, 28.1597],
+    zoom:                11.05,
+    bearing:             0,
+    pitch:               55
   });
 
   map.on('load', () => {
@@ -565,7 +565,7 @@ document.onreadystatechange = async () => { if(document.readyState !==
   const PITCH_SPEED = 1.5;
   const BEARING_SPEED = 2;
   const PITCH_MIN = 0;
-  const PITCH_MAX = 85;
+  const PITCH_MAX = 90;
 
   const navStep = () => {
     if (navKeys.size === 0) return;
