@@ -236,6 +236,9 @@ document.onreadystatechange = async () => { if(document.readyState !==
 
     created() {
       this.state = localStorage.immoMapState ? JSON.parse(localStorage.immoMapState) : {theme: 'dark'};
+      this.state.esriSatellite = this.state.esriSatellite ?? false;
+      this.state.jaxaTerrainRgb = this.state.jaxaTerrainRgb ?? false;
+      this.state.hillshades = this.state.hillshades ?? true;
     },
 
     methods: {
@@ -405,6 +408,23 @@ document.onreadystatechange = async () => { if(document.readyState !==
     },
 
     watch: {
+      'state.esriSatellite'(val) {
+        if (app.map && app.map.getLayer('satellite-esri')) {
+          app.map.setLayoutProperty('satellite-esri', 'visibility', val ? 'visible' : 'none');
+          app.map.setLayoutProperty('satellite-jaxa', 'visibility', (val ? false : app.vue.state.jaxaTerrainRgb) ? 'visible' : 'none');
+        }
+      },
+      'state.jaxaTerrainRgb'(val) {
+        if (app.map && app.map.getLayer('satellite-jaxa')) {
+          app.map.setLayoutProperty('satellite-jaxa', 'visibility', (val && !app.vue.state.esriSatellite) ? 'visible' : 'none');
+        }
+      },
+      'state.hillshades'(val) {
+        if (app.map && app.map.getLayer('hillshading')) {
+          app.map.setLayoutProperty('hillshading', 'visibility', val ? 'visible' : 'none');
+        }
+      },
+
       stage(val) {
         this.saveState('stage', val);
         this.updateInfo();
@@ -475,6 +495,10 @@ document.onreadystatechange = async () => { if(document.readyState !==
 
   map.on('load', () => {
     map.setTerrain({ source: 'terrain-dem', exaggeration: 2.5 });
+    const s = app.vue.state;
+    map.setLayoutProperty('satellite-esri', 'visibility', s.esriSatellite ? 'visible' : 'none');
+    map.setLayoutProperty('satellite-jaxa', 'visibility', (s.jaxaTerrainRgb && !s.esriSatellite) ? 'visible' : 'none');
+    map.setLayoutProperty('hillshading', 'visibility', s.hillshades ? 'visible' : 'none');
   });
 
   // Provide placeholder for missing sprite icons (e.g. railway_11, leisure_11 from POI class)

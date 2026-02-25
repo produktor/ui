@@ -120,6 +120,33 @@
 							<v-icon>mdi-invert-colors</v-icon>
 						</v-switch>
 					</v-list-item>
+					<v-list-item>
+						<v-switch
+							prepend-icon="mdi-satellite-variant"
+							v-model="state.esriSatellite"
+							hide-details
+							inset
+							label="ESRI Satellite">
+						</v-switch>
+					</v-list-item>
+					<v-list-item>
+						<v-switch
+							prepend-icon="mdi-terrain"
+							v-model="state.jaxaTerrainRgb"
+							hide-details
+							inset
+							label="Terrain RGB">
+						</v-switch>
+					</v-list-item>
+					<v-list-item>
+						<v-switch
+							prepend-icon="mdi-image-filter-hdr"
+							v-model="state.hillshades"
+							hide-details
+							inset
+							label="Hillshades">
+						</v-switch>
+					</v-list-item>
 
 					<v-list-item v-if="state.isDebug && false">
 						<v-switch

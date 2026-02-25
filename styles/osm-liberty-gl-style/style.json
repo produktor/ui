@@ -6,6 +6,19 @@
     "mapbox:type": "template"
   },
   "sources": {
+    "satellite-jaxa": {
+      "type": "raster",
+      "url": "https://tiles.produktor.duckdns.org/services/jaxa_terrainrgb0-12",
+      "tileSize": 512
+    },
+    "satellite-esri": {
+      "type": "raster",
+      "tiles": [
+        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+      ],
+      "tileSize": 256,
+      "attribution": "&copy; <a href='https://www.esri.com/'>Esri</a>"
+    },
     "openmaptiles": {
       "type": "vector",
       "url": "https://tiles.produktor.duckdns.org/services/planet-231204.osm.renumbered"
@@ -31,6 +44,20 @@
       "paint": {
         "background-color": "rgb(239,239,239)"
       }
+    },
+    {
+      "id": "satellite-jaxa",
+      "type": "raster",
+      "source": "satellite-jaxa",
+      "layout": { "visibility": "none" },
+      "paint": { "raster-opacity": 1 }
+    },
+    {
+      "id": "satellite-esri",
+      "type": "raster",
+      "source": "satellite-esri",
+      "layout": { "visibility": "none" },
+      "paint": { "raster-opacity": 1 }
     },
     {
       "id": "park",
