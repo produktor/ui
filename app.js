@@ -453,9 +453,16 @@ document.onreadystatechange = async () => { if(document.readyState !==
     vue.snackbarText = result;
   });
 
+  // Load style with absolute URLs for glyphs/sprite (MapLibre requires scheme+authority+path)
+  const base = new URL('.', window.location.href).href.replace(/\/$/, '') + '/';
+  const styleResp = await fetch('styles/osm-liberty-gl-style/style.json?x=' + Math.random());
+  const style = await styleResp.json();
+  style.glyphs = base + 'assets/fonts/map-fonts/{fontstack}/{range}.pbf';
+  style.sprite = base + 'styles/osm-liberty-gl-style/sprites/osm-liberty';
+
   app.map = map = new maplibregl.Map({
     container:           'map',
-    style:               'styles/osm-liberty-gl-style/style.json?x=' + Math.random(),
+    style:               style,
     hash:                true, // antialias: true,
     refreshExpiredTiles: false,
     boxZoom:             false,
@@ -464,6 +471,15 @@ document.onreadystatechange = async () => { if(document.readyState !==
     zoom:    11.05,
     bearing: 0,
     pitch:   55
+  });
+
+  // Provide placeholder for missing sprite icons (e.g. railway_11, leisure_11 from POI class)
+  map.on('styleimagemissing', (e) => {
+    const id = e.id;
+    if (map.hasImage(id)) return;
+    const size = 17;
+    const data = new Uint8Array(size * size * 4);
+    map.addImage(id, { width: size, height: size, data }, { pixelRatio: 1 });
   });
 
   function popUp(lon, lat, html) {
@@ -558,8 +574,8 @@ document.onreadystatechange = async () => { if(document.readyState !==
   map.on('load', () => {
 
     map.addSource('nominatim-regions', {
-      type: 'geojson',
-      data: null
+      type:       'geojson',
+      data:       { type: 'FeatureCollection', features: [] }
     });
 
     if(app.vue.state.theme === "dark") {
@@ -591,29 +607,44 @@ document.onreadystatechange = async () => { if(document.readyState !==
       type:   "symbol",
       source: 'nominatim-regions',
       layout: {
-        "text-field": "{displayname}{name}\n{administration}",
+        "text-field": "{displayname}{name}",
         "text-font":  ["Open Sans Bold"],
         "text-size":  20,
-        // "text-offset":        [0, 0.5],
         "icon-size":      1,
         "text-anchor":    "center",
         "text-justify":   "center",
         "text-max-width": 30,
-        // "icon-allow-overlap": true,
-        // "icon-optional":      true,
         "icon-pitch-alignment": "viewport",
         "icon-text-fit":        "none",
-        // "text-offset":  [0, 10],
-        // "text-rotation-alignment": "map"
-        // "symbol-placement": "line-center",
-
-        // "line-cap": "square",
-        // "line-join": "bevel"
       },
       paint:  {
         "text-color":      "#333333",
         "text-halo-width": 1,
         "text-halo-color": "rgba(255,255,255,255.75)",
+        "text-halo-blur":  1,
+      }
+    });
+
+    map.addLayer({
+      id:     'search-result-administration',
+      type:   "symbol",
+      source: 'nominatim-regions',
+      layout: {
+        "text-field": "{administration}",
+        "text-font":  ["Open Sans Bold"],
+        "text-size":  20,
+        "text-offset": [0, 1.2],
+        "icon-size":  1,
+        "text-anchor": "center",
+        "text-justify": "center",
+        "text-max-width": 30,
+        "icon-pitch-alignment": "viewport",
+        "icon-text-fit": "none",
+      },
+      paint:  {
+        "text-color":      "rgba(51, 51, 51, 0.7)",
+        "text-halo-width": 1,
+        "text-halo-color": "rgba(255,255,255,0.75)",
         "text-halo-blur":  1,
       }
     });
@@ -642,8 +673,8 @@ document.onreadystatechange = async () => { if(document.readyState !==
     // });
 
     map.addSource('geoid-regions', {
-      type: 'geojson',
-      data: null
+      type:       'geojson',
+      data:       { type: 'FeatureCollection', features: [] }
     });
 
     map.addLayer({

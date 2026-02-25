@@ -3068,7 +3068,7 @@
         ]
       ],
       "layout": {
-        "text-field": "{name}",
+        "text-field": "{name:latin}",
         "text-font": [
           "Roboto Regular"
         ],
@@ -3095,7 +3095,7 @@
         "Point"
       ],
       "layout": {
-        "text-field": "{name}",
+        "text-field": "{name:latin}",
         "text-font": [
           "Roboto Regular"
         ],
@@ -3132,7 +3132,7 @@
       "layout": {
         "icon-image": "{class}_11",
         "text-anchor": "top",
-        "text-field": "{name}",
+        "text-field": "{name:latin}",
         "text-font": [
           "Roboto Condensed Italic"
         ],
@@ -3179,7 +3179,7 @@
       "layout": {
         "icon-image": "{class}_11",
         "text-anchor": "top",
-        "text-field": "{name}",
+        "text-field": "{name:latin}",
         "text-font": [
           "Roboto Condensed Italic"
         ],
@@ -3226,7 +3226,7 @@
       "layout": {
         "icon-image": "{class}_11",
         "text-anchor": "top",
-        "text-field": "{name}",
+        "text-field": "{name:latin}",
         "text-font": [
           "Roboto Condensed Italic"
         ],
@@ -3254,7 +3254,7 @@
       "layout": {
         "icon-image": "{maki}_11",
         "text-anchor": "left",
-        "text-field": "{name_en}",
+        "text-field": "{name:latin}",
         "text-font": [
           "Roboto Condensed Italic"
         ],
@@ -3291,14 +3291,16 @@
       "source": "openmaptiles",
       "source-layer": "transportation_name",
       "filter": [
-        "all"
+        "all",
+        ["==", "$type", "LineString"]
       ],
       "layout": {
         "symbol-placement": "line",
+        "symbol-spacing": 250,
         "text-anchor": "center",
-        "text-field": "{name}",
+        "text-field": "{name:latin}",
         "text-font": [
-          "Open Sans"
+          "Roboto Regular"
         ],
         "text-offset": [
           0,
@@ -3314,6 +3316,18 @@
             [
               14,
               13
+            ],
+            [
+              15,
+              11
+            ],
+            [
+              16,
+              10
+            ],
+            [
+              17,
+              9
             ]
           ]
         }
@@ -3389,7 +3403,7 @@
         ]
       ],
       "layout": {
-        "text-field": "{name_en}",
+        "text-field": "{name:latin}",
         "text-font": [
           "Roboto Condensed Italic"
         ],
@@ -3431,7 +3445,7 @@
         ]
       ],
       "layout": {
-        "text-field": "{name_en}",
+        "text-field": "{name:latin}",
         "text-font": [
           "Roboto Regular"
         ],
@@ -3485,7 +3499,7 @@
           ]
         },
         "text-anchor": "bottom",
-        "text-field": "{name_en}",
+        "text-field": "{name:latin}",
         "text-font": [
           "Roboto Regular"
         ],
@@ -3544,7 +3558,7 @@
           ]
         },
         "text-anchor": "bottom",
-        "text-field": "{name_en}",
+        "text-field": "{name:latin}",
         "text-font": [
           "Roboto Medium"
         ],
@@ -3583,7 +3597,7 @@
       "source-layer": "place",
       "maxzoom": 6,
       "layout": {
-        "text-field": "{name_en}",
+        "text-field": "{name:latin}",
         "text-font": [
           "Roboto Condensed Italic"
         ],
@@ -3635,7 +3649,7 @@
         ]
       ],
       "layout": {
-        "text-field": "{name_en}",
+        "text-field": "{name:latin}",
         "text-font": [
           "Roboto Condensed Italic"
         ],
@@ -3681,7 +3695,7 @@
         ]
       ],
       "layout": {
-        "text-field": "{name_en}",
+        "text-field": "{name:latin}",
         "text-font": [
           "Roboto Condensed Italic"
         ],
@@ -3727,7 +3741,7 @@
         ]
       ],
       "layout": {
-        "text-field": "{name_en}",
+        "text-field": "{name:latin}",
         "text-font": [
           "Roboto Condensed Italic"
         ],
@@ -3761,7 +3775,7 @@
       "source-layer": "place",
       "maxzoom": 1,
       "layout": {
-        "text-field": "{name_en}",
+        "text-field": "{name:latin}",
         "text-font": [
           "Roboto Condensed Italic"
         ],
