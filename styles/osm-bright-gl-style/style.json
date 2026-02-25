@@ -24,7 +24,7 @@
   "sources": {
     "openmaptiles": {
       "type": "vector",
-      "url": "tileserver-php/tileserver.php?/index.json"
+      "url": "https://tiles.produktor.duckdns.org/services/planet-231204.osm.renumbered"
     }
   },
   "sprite": "https://openmaptiles.github.io/osm-bright-gl-style/sprite",

@@ -3,7 +3,7 @@
 document.onreadystatechange = async () => { if(document.readyState !==
   "complete") { return; }
 
-  let vue, map; let layerName = 'immo'; let popup;
+  let vue, map; let layerName = 'immo'; let popup; let poiPopup;
 
   // Import components (await
   // import('./components/button-counter.js')).default(); Vue.config.silent =
@@ -455,7 +455,7 @@ document.onreadystatechange = async () => { if(document.readyState !==
 
   app.map = map = new maplibregl.Map({
     container:           'map',
-    style:               'styles/map.style.json?x=' + Math.random(),
+    style:               'styles/osm-liberty-gl-style/style.json?x=' + Math.random(),
     hash:                true, // antialias: true,
     refreshExpiredTiles: false,
     boxZoom:             false,
