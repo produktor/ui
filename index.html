@@ -165,14 +165,13 @@
 							label="Globe">
 						</v-switch>
 					</v-list-item>
-
-					<v-list-item v-if="state.isDebug && false">
+					<v-list-item>
 						<v-switch
-							prepend-icon="mdi-buffer"
-							v-model="state.show3dBuildings"
+							prepend-icon="mdi-domain"
+							v-model="state.buildings3d"
 							hide-details
 							inset
-							label="3D Building">
+							label="3D Buildings">
 						</v-switch>
 					</v-list-item>
 				</v-list>

@@ -241,6 +241,7 @@ document.onreadystatechange = async () => { if(document.readyState !==
       this.state.hillshades = this.state.hillshades ?? true;
       this.state.osmVector = this.state.osmVector ?? true;
       this.state.globe = this.state.globe ?? false;
+      this.state.buildings3d = this.state.buildings3d ?? true;
     },
 
     methods: {
@@ -428,10 +429,19 @@ document.onreadystatechange = async () => { if(document.readyState !==
       },
       'state.osmVector'(val) {
         if (app.map && app.map.getStyle()) {
-          const vis = val ? 'visible' : 'none';
           app.map.getStyle().layers
             .filter(l => l.source === 'openmaptiles')
-            .forEach(l => app.map.setLayoutProperty(l.id, 'visibility', vis));
+            .forEach(l => {
+              let vis = val ? 'visible' : 'none';
+              if (l.id === 'building-3d' && !app.vue.state.buildings3d) vis = 'none';
+              app.map.setLayoutProperty(l.id, 'visibility', vis);
+            });
+        }
+      },
+      'state.buildings3d'(val) {
+        if (app.map && app.map.getLayer('building-3d')) {
+          app.map.setLayoutProperty('building-3d', 'visibility',
+            (val && app.vue.state.osmVector) ? 'visible' : 'none');
         }
       },
       'state.globe'(val) {
@@ -516,7 +526,7 @@ document.onreadystatechange = async () => { if(document.readyState !==
     hash:                true,
     refreshExpiredTiles: false,
     boxZoom:             false,
-    maxPitch:            85,
+    maxPitch:            80,
     center:              [-16.5262, 28.1597],
     zoom:                11.05,
     bearing:             0,
@@ -529,10 +539,13 @@ document.onreadystatechange = async () => { if(document.readyState !==
     map.setLayoutProperty('satellite-esri', 'visibility', s.esriSatellite ? 'visible' : 'none');
     map.setLayoutProperty('satellite-jaxa', 'visibility', (s.jaxaTerrainRgb && !s.esriSatellite) ? 'visible' : 'none');
     map.setLayoutProperty('hillshading', 'visibility', s.hillshades ? 'visible' : 'none');
-    const osmVis = s.osmVector ? 'visible' : 'none';
     map.getStyle().layers
       .filter(l => l.source === 'openmaptiles')
-      .forEach(l => map.setLayoutProperty(l.id, 'visibility', osmVis));
+      .forEach(l => {
+        let vis = s.osmVector ? 'visible' : 'none';
+        if (l.id === 'building-3d' && !s.buildings3d) vis = 'none';
+        map.setLayoutProperty(l.id, 'visibility', vis);
+      });
     if (typeof map.setProjection === 'function' && s.globe) {
       map.setProjection({ type: 'globe' });
     }
@@ -565,7 +578,7 @@ document.onreadystatechange = async () => { if(document.readyState !==
   const PITCH_SPEED = 1.5;
   const BEARING_SPEED = 2;
   const PITCH_MIN = 0;
-  const PITCH_MAX = 90;
+  const PITCH_MAX = 80;
 
   const navStep = () => {
     if (navKeys.size === 0) return;
