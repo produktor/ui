@@ -3,6 +3,12 @@ body, html {
   user-select: none;
 }
 
+/** Quick fix for the page content pane shadow */
+/* Page content pane */
+#inspire > div > main > div > div > div.flex-grow-1.flex-shrink-0.col.col-12 {
+box-shadow: 0px 0px 1px #000 !important;
+}
+
 #map {
   height: 100%;
 }

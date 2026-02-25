@@ -1,20 +1,20 @@
 /**
  * Geo compute utils library
  *
- * @type {{getBoundsByCoordinates: (function(*): {'mapboxgl.LngLatBounds'}), createWktPolygonFromBounds: (function(*): string), getFeatureCenter: (function(*): {lon: *, lat: *})}}
+ * @type {{getBoundsByCoordinates: (function(*): {'maplibregl.LngLatBounds'}), createWktPolygonFromBounds: (function(*): string), getFeatureCenter: (function(*): {lon: *, lat: *})}}
  */
 export const utils = {
 
   /**
    * Get bound by GeoJSON coordinates
    *
-   * @return {{mapboxgl.LngLatBounds}}
+   * @return {{maplibregl.LngLatBounds}}
    * @param featureGeometry GeoJSON coordinates
    */
   getBoundsByCoordinates: (featureGeometry) => {
     const coordinates = featureGeometry.coordinates;
-    const LngLat = mapboxgl.LngLat;
-    const LngLatBounds = mapboxgl.LngLatBounds;
+    const LngLat = maplibregl.LngLat;
+    const LngLatBounds = maplibregl.LngLatBounds;
     const type = featureGeometry.type;
     let fit;
     let southWest;

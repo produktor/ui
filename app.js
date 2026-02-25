@@ -453,7 +453,7 @@ document.onreadystatechange = async () => { if(document.readyState !==
     vue.snackbarText = result;
   });
 
-  app.map = map = new mapboxgl.Map({
+  app.map = map = new maplibregl.Map({
     container:           'map',
     style:               'styles/map.style.json?x=' + Math.random(),
     hash:                true, // antialias: true,
@@ -471,7 +471,7 @@ document.onreadystatechange = async () => { if(document.readyState !==
       popup.remove();
     }
 
-    popup = new mapboxgl.Popup()
+    popup = new maplibregl.Popup()
       .setLngLat([lon, lat])
       .setHTML('<div style="max-height: 300px; overflow: auto">' + html + '</div>')
       .addTo(map);
@@ -674,11 +674,11 @@ document.onreadystatechange = async () => { if(document.readyState !==
       map.getCanvas().style.cursor = '';
     });
 
-    map.addControl(new mapboxgl.NavigationControl(), 'bottom-right');
-    map.addControl(new mapboxgl.FullscreenControl());
+    map.addControl(new maplibregl.NavigationControl(), 'bottom-right');
+    map.addControl(new maplibregl.FullscreenControl());
 
     map.addControl(
-      new mapboxgl.GeolocateControl({
+      new maplibregl.GeolocateControl({
         positionOptions:   {
           enableHighAccuracy: true
         },
