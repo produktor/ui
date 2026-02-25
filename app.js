@@ -240,6 +240,7 @@ document.onreadystatechange = async () => { if(document.readyState !==
       this.state.jaxaTerrainRgb = this.state.jaxaTerrainRgb ?? false;
       this.state.hillshades = this.state.hillshades ?? true;
       this.state.osmVector = this.state.osmVector ?? true;
+      this.state.globe = this.state.globe ?? false;
     },
 
     methods: {
@@ -433,6 +434,26 @@ document.onreadystatechange = async () => { if(document.readyState !==
             .forEach(l => app.map.setLayoutProperty(l.id, 'visibility', vis));
         }
       },
+      'state.globe'(val) {
+        if (app.map && typeof app.map.setProjection === 'function') {
+          app.map.setProjection({ type: val ? 'globe' : 'mercator' });
+        }
+        if (app.map && typeof app.map.setSky === 'function') {
+          if (val) {
+            app.map.setSky({
+              'sky-color': '#000000',
+              'horizon-color': '#000000',
+              'fog-color': '#000000',
+              'sky-horizon-blend': 0,
+              'horizon-fog-blend': 0,
+              'fog-ground-blend': 0,
+              'atmosphere-blend': 0
+            });
+          } else {
+            app.map.setSky(undefined);
+          }
+        }
+      },
 
       stage(val) {
         this.saveState('stage', val);
@@ -512,6 +533,20 @@ document.onreadystatechange = async () => { if(document.readyState !==
     map.getStyle().layers
       .filter(l => l.source === 'openmaptiles')
       .forEach(l => map.setLayoutProperty(l.id, 'visibility', osmVis));
+    if (typeof map.setProjection === 'function' && s.globe) {
+      map.setProjection({ type: 'globe' });
+    }
+    if (typeof map.setSky === 'function' && s.globe) {
+      map.setSky({
+        'sky-color': '#000000',
+        'horizon-color': '#000000',
+        'fog-color': '#000000',
+        'sky-horizon-blend': 0,
+        'horizon-fog-blend': 0,
+        'fog-ground-blend': 0,
+        'atmosphere-blend': 0
+      });
+    }
   });
 
   // Provide placeholder for missing sprite icons (e.g. railway_11, leisure_11 from POI class)
@@ -521,6 +556,58 @@ document.onreadystatechange = async () => { if(document.readyState !==
     const size = 17;
     const data = new Uint8Array(size * size * 4);
     map.addImage(id, { width: size, height: size, data }, { pixelRatio: 1 });
+  });
+
+  // Keyboard navigation: W zoom in, S zoom out, A slide left, D slide right, F invert, arrows roll
+  const navKeys = new Set();
+  const ZOOM_SPEED = 0.08;
+  const PAN_SPEED = 12;
+  const PITCH_SPEED = 1.5;
+  const BEARING_SPEED = 2;
+  const PITCH_MIN = 0;
+  const PITCH_MAX = 85;
+
+  const navStep = () => {
+    if (navKeys.size === 0) return;
+    navKeys.forEach(k => {
+      if (k === 'w') map.zoomTo(map.getZoom() + ZOOM_SPEED, { duration: 0 });
+      if (k === 's') map.zoomTo(map.getZoom() - ZOOM_SPEED, { duration: 0 });
+      if (k === 'a') map.panBy([-PAN_SPEED, 0], { duration: 0 });
+      if (k === 'd') map.panBy([PAN_SPEED, 0], { duration: 0 });
+      if (k === 'ArrowUp') map.setPitch(Math.min(PITCH_MAX, map.getPitch() + PITCH_SPEED));
+      if (k === 'ArrowDown') map.setPitch(Math.max(PITCH_MIN, map.getPitch() - PITCH_SPEED));
+      if (k === 'ArrowLeft') map.setBearing(map.getBearing() - BEARING_SPEED);
+      if (k === 'ArrowRight') map.setBearing(map.getBearing() + BEARING_SPEED);
+    });
+  };
+
+  let navFrame = 0;
+  const navLoop = () => {
+    navFrame = requestAnimationFrame(navLoop);
+    navStep();
+  };
+  navFrame = requestAnimationFrame(navLoop);
+
+  const onNavKeyDown = (e) => {
+    if (document.activeElement && document.activeElement.closest('input, textarea, [contenteditable="true"]')) return;
+    const k = e.key;
+    if (['w', 's', 'a', 'd', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(k)) {
+      e.preventDefault();
+      navKeys.add(k);
+    }
+    if (k === 'f') {
+      e.preventDefault();
+      map.setBearing((map.getBearing() + 180) % 360);
+    }
+  };
+  const onNavKeyUp = (e) => navKeys.delete(e.key);
+  window.addEventListener('keydown', onNavKeyDown);
+  window.addEventListener('keyup', onNavKeyUp);
+
+  map.on('remove', () => {
+    cancelAnimationFrame(navFrame);
+    window.removeEventListener('keydown', onNavKeyDown);
+    window.removeEventListener('keyup', onNavKeyUp);
   });
 
   function popUp(lon, lat, html) {
