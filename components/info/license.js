@@ -16,7 +16,7 @@
     },
     template: `
       <div>
-      Copyright 2021 Andrew Oblivantsev<br/>
+      Copyright 2026 Andrew Oblivantsev<br/>
       <br/>
         Permission is hereby granted, free of charge, to any person obtaining
         a copy of this software and associated documentation files (the "Software"),

@@ -467,8 +467,8 @@ document.onreadystatechange = async () => { if(document.readyState !==
   let currentItemMenu = vue.items[0];
   currentItemMenu.model = true;
 
-  // Select first menu item frame
-  vue.currentFrame = currentItemMenu.children[0];
+  // No frame selected by default
+  vue.currentFrame = null;
 
   // Select land by default
   vue.country = vue.countries[0];

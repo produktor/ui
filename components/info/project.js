@@ -17,7 +17,7 @@
     template: `
                 <div>
                 <form>
-                  <a href="https://github.com/produktor/web" target="_blank">Produktor info portal</a>
+                  <a href="https://t.me/eSIider" target="_blank">Produktor Telegram PM</a>
 
                 </form>
                 </div>
