@@ -14,6 +14,12 @@
       "type": "raster",
       "url": "https://tiles.produktor.duckdns.org/services/jaxa_hillshade",
       "tileSize": 256
+    },
+    "terrain-dem": {
+      "type": "raster-dem",
+      "url": "https://tiles.produktor.duckdns.org/services/jaxa_terrainrgb0-12",
+      "tileSize": 512,
+      "encoding": "mapbox"
     }
   },
   "sprite": "styles/osm-liberty-gl-style/sprites/osm-liberty",
