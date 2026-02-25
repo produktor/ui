@@ -608,7 +608,7 @@ document.onreadystatechange = async () => { if(document.readyState !==
       source: 'nominatim-regions',
       layout: {
         "text-field": "{displayname}{name}",
-        "text-font":  ["Open Sans Bold"],
+        "text-font":  ["Roboto Bold"],
         "text-size":  20,
         "icon-size":      1,
         "text-anchor":    "center",
@@ -631,7 +631,7 @@ document.onreadystatechange = async () => { if(document.readyState !==
       source: 'nominatim-regions',
       layout: {
         "text-field": "{administration}",
-        "text-font":  ["Open Sans Bold"],
+        "text-font":  ["Roboto Bold"],
         "text-size":  20,
         "text-offset": [0, 1.2],
         "icon-size":  1,
@@ -683,7 +683,7 @@ document.onreadystatechange = async () => { if(document.readyState !==
       'source': 'geoid-regions',
       'layout': {
         // "text-field": "{display_name}",
-        // "text-font":  ["Open Sans Bold"],
+        // "text-font":  ["Roboto Bold"],
         // "text-size":  12,
       },
       'paint':  {
