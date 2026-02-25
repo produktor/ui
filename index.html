@@ -147,6 +147,15 @@
 							label="Hillshades">
 						</v-switch>
 					</v-list-item>
+					<v-list-item>
+						<v-switch
+							prepend-icon="mdi-map-legend"
+							v-model="state.osmVector"
+							hide-details
+							inset
+							label="OSM Vector">
+						</v-switch>
+					</v-list-item>
 
 					<v-list-item v-if="state.isDebug && false">
 						<v-switch

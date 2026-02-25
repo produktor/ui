@@ -239,6 +239,7 @@ document.onreadystatechange = async () => { if(document.readyState !==
       this.state.esriSatellite = this.state.esriSatellite ?? false;
       this.state.jaxaTerrainRgb = this.state.jaxaTerrainRgb ?? false;
       this.state.hillshades = this.state.hillshades ?? true;
+      this.state.osmVector = this.state.osmVector ?? true;
     },
 
     methods: {
@@ -424,6 +425,14 @@ document.onreadystatechange = async () => { if(document.readyState !==
           app.map.setLayoutProperty('hillshading', 'visibility', val ? 'visible' : 'none');
         }
       },
+      'state.osmVector'(val) {
+        if (app.map && app.map.getStyle()) {
+          const vis = val ? 'visible' : 'none';
+          app.map.getStyle().layers
+            .filter(l => l.source === 'openmaptiles')
+            .forEach(l => app.map.setLayoutProperty(l.id, 'visibility', vis));
+        }
+      },
 
       stage(val) {
         this.saveState('stage', val);
@@ -499,6 +508,10 @@ document.onreadystatechange = async () => { if(document.readyState !==
     map.setLayoutProperty('satellite-esri', 'visibility', s.esriSatellite ? 'visible' : 'none');
     map.setLayoutProperty('satellite-jaxa', 'visibility', (s.jaxaTerrainRgb && !s.esriSatellite) ? 'visible' : 'none');
     map.setLayoutProperty('hillshading', 'visibility', s.hillshades ? 'visible' : 'none');
+    const osmVis = s.osmVector ? 'visible' : 'none';
+    map.getStyle().layers
+      .filter(l => l.source === 'openmaptiles')
+      .forEach(l => map.setLayoutProperty(l.id, 'visibility', osmVis));
   });
 
   // Provide placeholder for missing sprite icons (e.g. railway_11, leisure_11 from POI class)
