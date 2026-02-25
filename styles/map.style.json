@@ -12,7 +12,7 @@
   "sources": {
     "openmaptiles": {
       "type": "vector",
-      "url": "https://tenerife.baby/data/planet-231204.osm.renumbered.json"
+      "url": "https://tiles.produktor.duckdns.org/services/planet-231204.osm.renumbered"
     },
     "maplibre": {
       "url": "https://demotiles.maplibre.org/tiles/tiles.json",
