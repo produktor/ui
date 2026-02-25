@@ -474,7 +474,7 @@ document.onreadystatechange = async () => { if(document.readyState !==
   });
 
   map.on('load', () => {
-    map.setTerrain({ source: 'terrain-dem', exaggeration: 1.5 });
+    map.setTerrain({ source: 'terrain-dem', exaggeration: 2.5 });
   });
 
   // Provide placeholder for missing sprite icons (e.g. railway_11, leisure_11 from POI class)
