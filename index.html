@@ -214,8 +214,9 @@
 					</v-col>
 					<v-col :cols="currentFrame?6:12" style="min-width: 100px; max-width: 100%;" class="flex-grow-1 flex-shrink-0 fill-height">
 						<div id="map" class="map-container" :class="{ 'globe-mode': state.globe }" style="width: 100%; margin-bottom: 10px">
-							<div id="immo-group-logo">
-								<img class="immo-logo" src="images/gis-icon2.png" style="width: 20px;">
+							<div id="map-tiles-loading" class="map-tiles-loading" aria-label="Loading tiles">
+								<div class="map-tiles-loading-spinner"></div>
+								<span class="map-tiles-loading-text">Loading</span>
 							</div>
 						</div>
 					</v-col>

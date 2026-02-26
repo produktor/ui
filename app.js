@@ -533,6 +533,9 @@ document.onreadystatechange = async () => { if(document.readyState !==
     pitch:               72
   });
 
+  const tilesLoadingEl = document.getElementById('map-tiles-loading');
+  if (tilesLoadingEl) tilesLoadingEl.classList.add('visible');
+
   map.on('load', () => {
     map.setTerrain({ source: 'terrain-dem', exaggeration: 2.5 });
     const s = app.vue.state;
@@ -561,6 +564,15 @@ document.onreadystatechange = async () => { if(document.readyState !==
       });
     }
   });
+
+  const setTilesLoading = (show) => {
+    if (tilesLoadingEl) {
+      show ? tilesLoadingEl.classList.add('visible') : tilesLoadingEl.classList.remove('visible');
+    }
+  };
+  map.on('movestart', () => setTilesLoading(true));
+  map.on('zoomstart', () => setTilesLoading(true));
+  map.on('idle', () => setTilesLoading(false));
 
   // Provide placeholder for missing sprite icons (e.g. railway_11, leisure_11 from POI class)
   map.on('styleimagemissing', (e) => {

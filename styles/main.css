@@ -35,13 +35,40 @@ box-shadow: 0px 0px 1px #000 !important;
 	/*filter: saturate(0.1) brightness(0.6) contrast(1.5);*/
 }
 
-#immo-group-logo {
+.map-tiles-loading {
   position: absolute;
   bottom: 10px;
   left: 10px;
   z-index: 10;
-	user-select: none;
-	pointer-events: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 4px;
+  color: #fff;
+  font-size: 12px;
+  user-select: none;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.map-tiles-loading.visible {
+  opacity: 1;
+}
+
+.map-tiles-loading-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: map-tiles-spin 0.8s linear infinite;
+}
+
+@keyframes map-tiles-spin {
+  to { transform: rotate(360deg); }
 }
 
 .maplibregl-popup-content .maplibregl-popup-close-button {
