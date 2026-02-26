@@ -302,8 +302,8 @@
       "source": "openmaptiles",
       "source-layer": "water",
       "paint": {
-        "fill-color": "#003d5c",
-        "fill-opacity": 0.7
+        "fill-color": "#006994",
+        "fill-opacity": 0.85
       }
     },
     {

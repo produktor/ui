@@ -97,64 +97,6 @@ box-shadow: 0px 0px 1px #000 !important;
 	/*filter: saturate(0.1) brightness(0.6) contrast(1.5);*/
 }
 
-/* Elevation legend (0–1400 m) */
-.elevation-legend {
-  position: absolute;
-  top: 50%;
-  right: 70px;
-  transform: translateY(-50%);
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 8px 10px;
-  background: rgba(0, 0, 0, 0.5);
-  border-radius: 4px;
-  opacity: 0.8;
-  user-select: none;
-}
-
-.elevation-legend:hover {
-  opacity: 1;
-}
-
-.elevation-legend-bar {
-  width: 14px;
-  height: 120px;
-  border-radius: 2px;
-  background: linear-gradient(
-    to top,
-    #0d4d0d 0%,
-    #2d6b2d 7%,
-    #5a8c2e 25%,
-    #c99728 42%,
-    #d47a38 55%,
-    #a84d35 70%,
-    #6b5c52 82%,
-    #9a9188 92%,
-    #e5e2de 98%,
-    #ffffff 100%
-  );
-}
-
-.elevation-legend-labels {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 120px;
-  font-size: 11px;
-  color: #fff;
-  font-family: monospace;
-}
-
-.elevation-legend-unit {
-  font-size: 12px;
-  font-weight: bold;
-  color: #fff;
-  margin-left: 2px;
-  align-self: center;
-}
-
 .map-bottom-bar {
   position: absolute;
   bottom: 10px;

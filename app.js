@@ -402,12 +402,14 @@ document.onreadystatechange = async () => { if(document.readyState !==
       'state.esriSatellite'(val) {
         if (app.map && app.map.getLayer('satellite-esri')) {
           app.map.setLayoutProperty('satellite-esri', 'visibility', val ? 'visible' : 'none');
-          app.map.setLayoutProperty('satellite-jaxa', 'visibility', (val ? false : app.vue.state.jaxaTerrainRgb) ? 'visible' : 'none');
+          if (app.map.getLayer('terrain-elevation')) {
+            app.map.setLayoutProperty('terrain-elevation', 'visibility', (val ? false : app.vue.state.jaxaTerrainRgb) ? 'visible' : 'none');
+          }
         }
       },
       'state.jaxaTerrainRgb'(val) {
-        if (app.map && app.map.getLayer('satellite-jaxa')) {
-          app.map.setLayoutProperty('satellite-jaxa', 'visibility', (val && !app.vue.state.esriSatellite) ? 'visible' : 'none');
+        if (app.map && app.map.getLayer('terrain-elevation')) {
+          app.map.setLayoutProperty('terrain-elevation', 'visibility', (val && !app.vue.state.esriSatellite) ? 'visible' : 'none');
         }
       },
       'state.hillshades'(val) {
@@ -547,9 +549,24 @@ document.onreadystatechange = async () => { if(document.readyState !==
 
   map.on('load', () => {
     map.setTerrain({ source: 'terrain-dem', exaggeration: 2.5 });
+    if (!map.getLayer('terrain-elevation')) {
+      map.addLayer({
+        id: 'terrain-elevation',
+        type: 'hillshade',
+        source: 'terrain-dem',
+        paint: {
+          'hillshade-shadow-color': '#0d4d0d',
+          'hillshade-highlight-color': '#ffffff',
+          'hillshade-accent-color': '#5a8c2e',
+          'hillshade-exaggeration': 0.8,
+          'hillshade-illumination-direction': 315
+        }
+      }, 'satellite-jaxa');
+    }
     const s = app.vue.state;
     map.setLayoutProperty('satellite-esri', 'visibility', s.esriSatellite ? 'visible' : 'none');
-    map.setLayoutProperty('satellite-jaxa', 'visibility', (s.jaxaTerrainRgb && !s.esriSatellite) ? 'visible' : 'none');
+    map.setLayoutProperty('satellite-jaxa', 'visibility', 'none');
+    map.setLayoutProperty('terrain-elevation', 'visibility', (s.jaxaTerrainRgb && !s.esriSatellite) ? 'visible' : 'none');
     map.setLayoutProperty('hillshading', 'visibility', s.hillshades ? 'visible' : 'none');
     map.getStyle().layers
       .filter(l => l.source === 'openmaptiles')
