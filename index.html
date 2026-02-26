@@ -60,7 +60,7 @@
 						append-icon=""
 					>
 						<template v-slot:activator>
-							<v-list-item-content>
+							<v-list-item-content @click="closeOtherMenuSections(item)">
 								<v-list-item-title>
 									{{ item.text }}
 								</v-list-item-title>
@@ -107,7 +107,7 @@
 					append-icon=""
 				>
 					<template v-slot:activator>
-						<v-list-item-content>
+						<v-list-item-content @click="closeOtherMenuSections('settings')">
 							<v-list-item-title>Settings</v-list-item-title>
 						</v-list-item-content>
 					</template>
@@ -119,17 +119,6 @@
 							value="dark"
 							inset
 							label="Theme">
-						</v-switch>
-					</v-list-item>
-					<v-list-item>
-						<v-switch
-							prepend-icon="mdi-bug"
-							v-model="state.isDebug"
-							color="red"
-							hide-details
-							inset
-							label="Debugging">
-							<v-icon>mdi-invert-colors</v-icon>
 						</v-switch>
 					</v-list-item>
 					<v-list-item>
@@ -196,6 +185,17 @@
 							label="3D Buildings">
 						</v-switch>
 					</v-list-item>
+					<v-list-item>
+						<v-switch
+							prepend-icon="mdi-bug"
+							v-model="state.isDebug"
+							color="red"
+							hide-details
+							inset
+							label="Debugging">
+							<v-icon>mdi-invert-colors</v-icon>
+						</v-switch>
+					</v-list-item>
 				</v-list-group>
 
 				<v-list-group
@@ -205,7 +205,7 @@
 					append-icon=""
 				>
 					<template v-slot:activator>
-						<v-list-item-content>
+						<v-list-item-content @click="closeOtherMenuSections('project')">
 							<v-list-item-title>Project</v-list-item-title>
 						</v-list-item-content>
 					</template>

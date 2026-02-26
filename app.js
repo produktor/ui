@@ -12,7 +12,7 @@ document.onreadystatechange = async () => { if(document.readyState !==
   let menuItems = [
 
     { icon:       'mdi-chevron-up', 'icon-alt': 'mdi-chevron-down', text:
-      'Service',
+      'Goods',
       model:      true,
       children:   [
         {
@@ -21,7 +21,7 @@ document.onreadystatechange = async () => { if(document.readyState !==
           id:   'product-search'
         }, {
           icon: 'mdi-arrow-up-bold-box',
-          text: 'Give',
+          text: 'Share',
           id:   'product-serve'
         }
       ],
@@ -215,6 +215,7 @@ document.onreadystatechange = async () => { if(document.readyState !==
 
     created() {
       this.state = localStorage.immoMapState ? JSON.parse(localStorage.immoMapState) : {theme: 'light'};
+      this.state.isAnimated = this.state.isAnimated ?? true;
       this.state.esriSatellite = this.state.esriSatellite ?? true;
       this.state.jaxaTerrainRgb = this.state.jaxaTerrainRgb ?? false;
       this.state.hillshades = this.state.hillshades ?? true;
@@ -352,6 +353,14 @@ document.onreadystatechange = async () => { if(document.readyState !==
           "uiVersion": "0.1.12b",
           "map":       "Canary 2021.12"
         };
+      },
+
+      closeOtherMenuSections(except) {
+        if (except !== 'settings') this.settingsOpen = false;
+        if (except !== 'project') this.projectOpen = false;
+        this.items.forEach(i => {
+          if (i !== except) i.model = false;
+        });
       },
 
       // Copy versions to clipboard
