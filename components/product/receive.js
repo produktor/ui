@@ -160,7 +160,7 @@
     watch: {
 
       // on item select
-      result(feature) {
+      result(feature) { 
         return;
 
         if(!feature || !feature.properties) return;

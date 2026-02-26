@@ -12,26 +12,26 @@ document.onreadystatechange = async () => { if(document.readyState !==
   let menuItems = [
 
     { icon:       'mdi-chevron-up', 'icon-alt': 'mdi-chevron-down', text:
-      'Products',
+      'Service',
+      model:      true,
       children:   [
         {
           icon: 'mdi-arrow-down-bold-box',
-          text: 'Find a product',
+          text: 'Search',
           id:   'product-search'
         }, {
           icon: 'mdi-arrow-up-bold-box',
-          text: 'Give away',
+          text: 'Give',
           id:   'product-serve'
         }
       ],
     },
-    {//                 <v-icon>mdi-map</v-icon>
+    {
       icon:       'mdi-chevron-up',
       'icon-alt': 'mdi-chevron-down',
       text:       'Service',
       onDebug:    true,
       children:   [
-
         {
           icon: 'mdi-arrow-down-bold-box-outline',
           text: 'Find a service',
@@ -43,33 +43,6 @@ document.onreadystatechange = async () => { if(document.readyState !==
           id:   'service-serve'
         }
       ],
-    },
-    {
-      icon:       'mdi-chevron-dio',
-      'icon-alt': 'mdi-chevron-down',
-      text:       'Project',
-      children:   [
-        // {
-        //   icon: 'mdi-head-question-outline',
-        //   text: 'FAQ',
-        //   id:   'info-questions'
-        // },
-        {
-          icon: 'mdi-book-open-variant',
-          text: 'Terms of use',
-          id:   'info-terms'
-        },
-        {
-          icon: 'mdi-information',
-          text: 'About',
-          id:   'info-project'
-        },
-        {
-          icon: 'mdi-copyright',
-          text: 'License',
-          id:   'info-license'
-        }
-      ]
     },
 
   ];
@@ -96,6 +69,7 @@ document.onreadystatechange = async () => { if(document.readyState !==
   }
 
   await loadItems(menuItems);
+  await loadItems([{ id: 'info-project' }]);
 
   app.vue = vue = new Vue({
     el:      '#app',
@@ -221,6 +195,9 @@ document.onreadystatechange = async () => { if(document.readyState !==
       // Displaying navigation?
       drawer: null,
 
+      // Settings group expanded state
+      settingsOpen: false,
+
       // Current service stage
       stage: 'Dev',
 
@@ -232,6 +209,8 @@ document.onreadystatechange = async () => { if(document.readyState !==
 
       // Menu items
       items: menuItems,
+
+      projectOpen: false,
     }),
 
     created() {
@@ -534,7 +513,28 @@ document.onreadystatechange = async () => { if(document.readyState !==
   });
 
   const tilesLoadingEl = document.getElementById('map-tiles-loading');
+  const mapStatsEl = document.getElementById('map-stats');
   if (tilesLoadingEl) tilesLoadingEl.classList.add('visible');
+
+  const fmt = (n) => (n >= 1000 ? (n / 1000).toFixed(1).replace(/\.0$/, '') + 'k' : String(n));
+  const getSourceTileCount = (name) => {
+    try {
+      const s = map.getSource(name);
+      if (s && typeof s._tiles === 'object') return Object.keys(s._tiles).length;
+      if (s && s._loadedTiles) return Object.keys(s._loadedTiles).length;
+    } catch (_) {}
+    return 0;
+  };
+  const updateStats = () => {
+    if (!mapStatsEl) return;
+    const hills = getSourceTileCount('hillshading');
+    const osm = getSourceTileCount('openmaptiles');
+    const terrain = getSourceTileCount('terrain-dem') || getSourceTileCount('satellite-jaxa');
+    const esri = getSourceTileCount('satellite-esri');
+    const parts = [`hills: ${fmt(hills)}`, `osm: ${fmt(osm)}`, `terrain: ${fmt(terrain)}`];
+    if (esri) parts.push(`esri: ${fmt(esri)}`);
+    mapStatsEl.textContent = parts.join(', ');
+  };
 
   map.on('load', () => {
     map.setTerrain({ source: 'terrain-dem', exaggeration: 2.5 });
@@ -563,6 +563,7 @@ document.onreadystatechange = async () => { if(document.readyState !==
         'atmosphere-blend': 0
       });
     }
+    updateStats();
   });
 
   const setTilesLoading = (show) => {
@@ -572,7 +573,9 @@ document.onreadystatechange = async () => { if(document.readyState !==
   };
   map.on('movestart', () => setTilesLoading(true));
   map.on('zoomstart', () => setTilesLoading(true));
-  map.on('idle', () => setTilesLoading(false));
+  map.on('idle', () => { setTilesLoading(false); updateStats(); });
+  map.on('data', updateStats);
+  map.on('sourcedata', updateStats);
 
   // Provide placeholder for missing sprite icons (e.g. railway_11, leisure_11 from POI class)
   map.on('styleimagemissing', (e) => {
