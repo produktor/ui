@@ -584,6 +584,10 @@ document.onreadystatechange = async () => { if(document.readyState !==
             const model = gltf.scene.clone();
             model.position.set(0, 0, 0);
             this.scene.add(model);
+          },
+          undefined,
+          (error) => {
+            console.error('Failed to load GLTF model for 3d-model layer', error);
           }
         );
 
@@ -612,9 +616,15 @@ document.onreadystatechange = async () => { if(document.readyState !==
 
         const projectionMatrix = (
           matrixOrArgs &&
+          matrixOrArgs.modelViewProjectionMatrix
+        ) || (
+          matrixOrArgs &&
           matrixOrArgs.defaultProjectionData &&
           matrixOrArgs.defaultProjectionData.mainMatrix
         ) || matrixOrArgs;
+        if (!projectionMatrix || typeof projectionMatrix.length !== 'number') {
+          return;
+        }
         const m = new THREE.Matrix4().fromArray(projectionMatrix);
         const l = new THREE.Matrix4()
           .makeTranslation(mt.translateX, mt.translateY, mt.translateZ)
