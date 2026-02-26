@@ -1,10 +1,10 @@
 {
-  "id": "/",
+  "id": "/ui/",
   "name": "Produktor.io",
   "short_name": "Produktor",
   "description": "Map application built with Vue, Vuetify, and MapLibre GL",
-  "start_url": "/",
-  "scope": "/",
+  "start_url": "/ui/",
+  "scope": "/ui/",
   "display": "standalone",
   "orientation": "any",
   "background_color": "#efefef",
