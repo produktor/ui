@@ -4,8 +4,8 @@
   <meta charset="utf-8"/>
   <title>Add a 3D model</title>
   <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no"/>
-  <script src="https://unpkg.com/maplibre-gl@1.15.2/dist/maplibre-gl.js"></script>
-  <link href="https://unpkg.com/maplibre-gl@1.15.2/dist/maplibre-gl.css" rel="stylesheet"/>
+  <script src="js/maplibre-gl.js"></script>
+  <link href="styles/maplibre-gl.css" rel="stylesheet"/>
   <style>
     body {
       margin: 0;
@@ -25,13 +25,20 @@
 <script src="https://unpkg.com/three@0.106.2/examples/js/loaders/GLTFLoader.js"></script>
 <div id="map"></div>
 <script>
+  (async function() {
   // [-16.5262, 28.1597]
   let modelOrigin = [-16.3013, 28.4684];
+
+  const base = new URL('.', window.location.href).href.replace(/\/$/, '') + '/';
+  const styleResp = await fetch('styles/osm-liberty-gl-style/style.json?x=' + Math.random());
+  const style = await styleResp.json();
+  style.glyphs = base + 'assets/fonts/map-fonts/{fontstack}/{range}.pbf';
+  style.sprite = base + 'styles/osm-liberty-gl-style/sprites/osm-liberty';
+
   let map = (window.map = new maplibregl.Map({
     container: 'map',
-    style:     'styles/map.style.json?x=' + Math.random(),
-
-    zoom: 18,
+    style:     style,
+    zoom:      18,
     center:    modelOrigin,
     pitch:     60,
     antialias: true // create the gl context with MSAA antialiasing, so custom layers are antialiased
@@ -93,7 +100,32 @@
       loader.load(
               'https://docs.mapbox.com/mapbox-gl-js/assets/34M_17/34M_17.gltf',
               (gltf) => {
-                this.scene.add(gltf.scene);
+                // Add multiple instances of the same model at different positions
+                const positions = [
+                  { x: 0, y: 0, z: 0 },
+                  { x: 50, y: 0, z: 0 },
+                  { x: -50, y: 0, z: 0 },
+                  { x: 0, y: 50, z: 0 },
+                  { x: 0, y: -50, z: 0 },
+                  { x: 35, y: 35, z: 0 },
+                  { x: -35, y: -35, z: 0 },
+                  { x: 35, y: -35, z: 0 },
+                  { x: -35, y: 35, z: 0 }
+                ];
+
+                positions.forEach((pos, index) => {
+                  // Clone the model for each instance
+                  const modelInstance = gltf.scene.clone();
+                  modelInstance.position.set(pos.x, pos.y, pos.z);
+                  
+                  // Add slight rotation variation for visual interest
+                  modelInstance.rotation.y = (index * Math.PI / 4);
+                  
+                  this.scene.add(modelInstance);
+                });
+                
+                // Store positions for animation
+                objectPositions = positions;
               }
       );
 
@@ -149,18 +181,87 @@
     }
   };
 
-  function rotateCamera(timestamp) {
-    // clamp the rotation between 0 -360 degrees
-    // Divide timestamp by 100 to slow rotation to ~10 degrees / sec
-    map.rotateTo((timestamp / 100) % 360, { duration: 0 });
-    // Request the next frame of the animation.
-    requestAnimationFrame(rotateCamera);
+  let currentObjectIndex = 0;
+  let objectPositions = [];
+  let animationStartTime = null;
+  let isAnimating = false;
+
+function smoothFocusAnimation(timestamp) {
+    if (!animationStartTime) animationStartTime = timestamp;
+    const elapsed = timestamp - animationStartTime;
+    const progress = Math.min(elapsed / 2000, 1); // 2 second animation
+    
+    const currentPos = objectPositions[currentObjectIndex];
+    const nextIndex = (currentObjectIndex + 1) % objectPositions.length;
+    const nextPos = objectPositions[nextIndex];
+    
+    // Smooth easing function (ease-in-out)
+    const easeProgress = progress < 0.5 
+      ? 2 * progress * progress 
+      : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+    
+    // Interpolate between current and next positions
+    const interpolatedX = currentPos.x + (nextPos.x - currentPos.x) * easeProgress;
+    const interpolatedY = currentPos.y + (nextPos.y - currentPos.y) * easeProgress;
+    
+    // Convert interpolated position to map coordinates
+    const mercatorCoordinate = maplibregl.MercatorCoordinate.fromLngLat(
+      modelOrigin,
+      modelAltitude
+    );
+    
+    const targetX = mercatorCoordinate.x + (interpolatedX * mercatorCoordinate.meterInMercatorCoordinateUnits());
+    const targetY = mercatorCoordinate.y + (interpolatedY * mercatorCoordinate.meterInMercatorCoordinateUnits());
+    
+    // Create new mercator coordinate for target position
+    const targetMercator = new maplibregl.MercatorCoordinate(targetX, targetY, mercatorCoordinate.z);
+    const targetLngLat = targetMercator.toLngLat();
+    
+    // Smooth camera movement with bearing animation
+    const bearing = (currentObjectIndex * 45 + progress * 45) % 360;
+    
+    // Validate coordinates before using them
+    if (!targetLngLat || isNaN(targetLngLat.lng) || isNaN(targetLngLat.lat)) {
+      console.error('Invalid coordinates generated - falling back to model origin');
+      // Fallback to model origin
+      map.jumpTo({
+        center: modelOrigin,
+        zoom: 19,
+        pitch: 60,
+        bearing: bearing
+      });
+      return;
+    }
+    
+    map.jumpTo({
+      center: [targetLngLat.lng, targetLngLat.lat],
+      zoom: 19,
+      pitch: 60,
+      bearing: bearing
+    });
+    
+    if (progress < 1) {
+      requestAnimationFrame(smoothFocusAnimation);
+    } else {
+      // Animation complete, move to next object
+      currentObjectIndex = nextIndex;
+      animationStartTime = null;
+      
+      // Start next animation after 2 second pause
+      setTimeout(() => {
+        requestAnimationFrame(smoothFocusAnimation);
+      }, 2000);
+    }
   }
 
-  map.on('style.load', function() {
+  map.on('load', function() {
     map.addLayer(customLayer, 'place_label_city');
-    rotateCamera(0);
+    // Start smooth focusing animation after a short delay
+    setTimeout(() => {
+      requestAnimationFrame(smoothFocusAnimation);
+    }, 1000);
   });
+  })();
 </script>
 
 </body>

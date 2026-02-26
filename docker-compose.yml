@@ -1,0 +1,12 @@
+services:
+  maputnik:
+    image: ghcr.io/maplibre/maputnik:main
+    ports:
+      - "8888:8000"
+    volumes:
+      - ./styles:/styles
+    command:
+      - maputnik
+      - --watch
+      - --file
+      - /styles/map.style.json

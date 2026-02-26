@@ -1,24 +1,18 @@
 "use strict";
 
-document.onreadystatechange = async () => {
-  if(document.readyState !== "complete") {
-    return;
-  }
+document.onreadystatechange = async () => { if(document.readyState !==
+  "complete") { return; }
 
-  let vue, map;
-  let layerName = 'immo';
-  let popup;
+  let vue, map; let layerName = 'immo'; let popup; let poiPopup;
 
-  // Import components
-  // (await import('./components/button-counter.js')).default();
-  Vue.config.silent = false;
+  // Import components (await
+  // import('./components/button-counter.js')).default(); Vue.config.silent =
+  // false;
 
   let menuItems = [
 
-    {
-      icon:       'mdi-chevron-up',
-      'icon-alt': 'mdi-chevron-down',
-      text:       'Products',
+    { icon:       'mdi-chevron-up', 'icon-alt': 'mdi-chevron-down', text:
+      'Products',
       children:   [
         {
           icon: 'mdi-arrow-down-bold-box',
@@ -242,6 +236,12 @@ document.onreadystatechange = async () => {
 
     created() {
       this.state = localStorage.immoMapState ? JSON.parse(localStorage.immoMapState) : {theme: 'dark'};
+      this.state.esriSatellite = this.state.esriSatellite ?? false;
+      this.state.jaxaTerrainRgb = this.state.jaxaTerrainRgb ?? false;
+      this.state.hillshades = this.state.hillshades ?? true;
+      this.state.osmVector = this.state.osmVector ?? true;
+      this.state.globe = this.state.globe ?? false;
+      this.state.buildings3d = this.state.buildings3d ?? true;
     },
 
     methods: {
@@ -411,6 +411,60 @@ document.onreadystatechange = async () => {
     },
 
     watch: {
+      'state.esriSatellite'(val) {
+        if (app.map && app.map.getLayer('satellite-esri')) {
+          app.map.setLayoutProperty('satellite-esri', 'visibility', val ? 'visible' : 'none');
+          app.map.setLayoutProperty('satellite-jaxa', 'visibility', (val ? false : app.vue.state.jaxaTerrainRgb) ? 'visible' : 'none');
+        }
+      },
+      'state.jaxaTerrainRgb'(val) {
+        if (app.map && app.map.getLayer('satellite-jaxa')) {
+          app.map.setLayoutProperty('satellite-jaxa', 'visibility', (val && !app.vue.state.esriSatellite) ? 'visible' : 'none');
+        }
+      },
+      'state.hillshades'(val) {
+        if (app.map && app.map.getLayer('hillshading')) {
+          app.map.setLayoutProperty('hillshading', 'visibility', val ? 'visible' : 'none');
+        }
+      },
+      'state.osmVector'(val) {
+        if (app.map && app.map.getStyle()) {
+          app.map.getStyle().layers
+            .filter(l => l.source === 'openmaptiles')
+            .forEach(l => {
+              let vis = val ? 'visible' : 'none';
+              if (l.id === 'building-3d' && !app.vue.state.buildings3d) vis = 'none';
+              app.map.setLayoutProperty(l.id, 'visibility', vis);
+            });
+        }
+      },
+      'state.buildings3d'(val) {
+        if (app.map && app.map.getLayer('building-3d')) {
+          app.map.setLayoutProperty('building-3d', 'visibility',
+            (val && app.vue.state.osmVector) ? 'visible' : 'none');
+        }
+      },
+      'state.globe'(val) {
+        if (app.map && typeof app.map.setProjection === 'function') {
+          app.map.setProjection({ type: val ? 'globe' : 'mercator' });
+        }
+        if (app.map && typeof app.map.setSky === 'function') {
+          if (val) {
+            app.map.setSky({
+              'sky-color': '#000000',
+              'horizon-color': '#000000',
+              'fog-color': '#000000',
+              'sky-horizon-blend': 0,
+              'horizon-fog-blend': 0,
+              'fog-ground-blend': 0,
+              'atmosphere-blend': 0
+            });
+          } else {
+            app.map.setSky(undefined);
+          }
+        }
+      },
+
       stage(val) {
         this.saveState('stage', val);
         this.updateInfo();
@@ -444,8 +498,8 @@ document.onreadystatechange = async () => {
   let currentItemMenu = vue.items[0];
   currentItemMenu.model = true;
 
-  // Select first menu item frame
-  vue.currentFrame = currentItemMenu.children[0];
+  // No frame selected by default
+  vue.currentFrame = null;
 
   // Select land by default
   vue.country = vue.countries[0];
@@ -459,17 +513,114 @@ document.onreadystatechange = async () => {
     vue.snackbarText = result;
   });
 
-  app.map = map = new mapboxgl.Map({
+  // Load style with absolute URLs for glyphs/sprite (MapLibre requires scheme+authority+path)
+  const base = new URL('.', window.location.href).href.replace(/\/$/, '') + '/';
+  const styleResp = await fetch('styles/osm-liberty-gl-style/style.json?x=' + Math.random());
+  const style = await styleResp.json();
+  style.glyphs = base + 'assets/fonts/map-fonts/{fontstack}/{range}.pbf';
+  style.sprite = base + 'styles/osm-liberty-gl-style/sprites/osm-liberty';
+
+  app.map = map = new maplibregl.Map({
     container:           'map',
-    style:               'styles/map.style.json?x=' + Math.random(),
-    hash:                true, // antialias: true,
+    style:               style,
+    hash:                true,
     refreshExpiredTiles: false,
     boxZoom:             false,
-    // 10.73/28.354/-16.4001/-98.4/60
-    center:  [-16.5262, 28.1597],
-    zoom:    11.05,
-    bearing: 0,
-    pitch:   55
+    maxPitch:            80,
+    center:              [-16.5262, 28.1597],
+    zoom:                11.05,
+    bearing:             0,
+    pitch:               55
+  });
+
+  map.on('load', () => {
+    map.setTerrain({ source: 'terrain-dem', exaggeration: 2.5 });
+    const s = app.vue.state;
+    map.setLayoutProperty('satellite-esri', 'visibility', s.esriSatellite ? 'visible' : 'none');
+    map.setLayoutProperty('satellite-jaxa', 'visibility', (s.jaxaTerrainRgb && !s.esriSatellite) ? 'visible' : 'none');
+    map.setLayoutProperty('hillshading', 'visibility', s.hillshades ? 'visible' : 'none');
+    map.getStyle().layers
+      .filter(l => l.source === 'openmaptiles')
+      .forEach(l => {
+        let vis = s.osmVector ? 'visible' : 'none';
+        if (l.id === 'building-3d' && !s.buildings3d) vis = 'none';
+        map.setLayoutProperty(l.id, 'visibility', vis);
+      });
+    if (typeof map.setProjection === 'function' && s.globe) {
+      map.setProjection({ type: 'globe' });
+    }
+    if (typeof map.setSky === 'function' && s.globe) {
+      map.setSky({
+        'sky-color': '#000000',
+        'horizon-color': '#000000',
+        'fog-color': '#000000',
+        'sky-horizon-blend': 0,
+        'horizon-fog-blend': 0,
+        'fog-ground-blend': 0,
+        'atmosphere-blend': 0
+      });
+    }
+  });
+
+  // Provide placeholder for missing sprite icons (e.g. railway_11, leisure_11 from POI class)
+  map.on('styleimagemissing', (e) => {
+    const id = e.id;
+    if (map.hasImage(id)) return;
+    const size = 17;
+    const data = new Uint8Array(size * size * 4);
+    map.addImage(id, { width: size, height: size, data }, { pixelRatio: 1 });
+  });
+
+  // Keyboard navigation: W zoom in, S zoom out, A slide left, D slide right, F invert, arrows roll
+  const navKeys = new Set();
+  const ZOOM_SPEED = 0.08;
+  const PAN_SPEED = 12;
+  const PITCH_SPEED = 1.5;
+  const BEARING_SPEED = 2;
+  const PITCH_MIN = 0;
+  const PITCH_MAX = 80;
+
+  const navStep = () => {
+    if (navKeys.size === 0) return;
+    navKeys.forEach(k => {
+      if (k === 'w') map.zoomTo(map.getZoom() + ZOOM_SPEED, { duration: 0 });
+      if (k === 's') map.zoomTo(map.getZoom() - ZOOM_SPEED, { duration: 0 });
+      if (k === 'a') map.panBy([-PAN_SPEED, 0], { duration: 0 });
+      if (k === 'd') map.panBy([PAN_SPEED, 0], { duration: 0 });
+      if (k === 'ArrowUp') map.setPitch(Math.min(PITCH_MAX, map.getPitch() + PITCH_SPEED));
+      if (k === 'ArrowDown') map.setPitch(Math.max(PITCH_MIN, map.getPitch() - PITCH_SPEED));
+      if (k === 'ArrowLeft') map.setBearing(map.getBearing() - BEARING_SPEED);
+      if (k === 'ArrowRight') map.setBearing(map.getBearing() + BEARING_SPEED);
+    });
+  };
+
+  let navFrame = 0;
+  const navLoop = () => {
+    navFrame = requestAnimationFrame(navLoop);
+    navStep();
+  };
+  navFrame = requestAnimationFrame(navLoop);
+
+  const onNavKeyDown = (e) => {
+    if (document.activeElement && document.activeElement.closest('input, textarea, [contenteditable="true"]')) return;
+    const k = e.key;
+    if (['w', 's', 'a', 'd', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(k)) {
+      e.preventDefault();
+      navKeys.add(k);
+    }
+    if (k === 'f') {
+      e.preventDefault();
+      map.setBearing((map.getBearing() + 180) % 360);
+    }
+  };
+  const onNavKeyUp = (e) => navKeys.delete(e.key);
+  window.addEventListener('keydown', onNavKeyDown);
+  window.addEventListener('keyup', onNavKeyUp);
+
+  map.on('remove', () => {
+    cancelAnimationFrame(navFrame);
+    window.removeEventListener('keydown', onNavKeyDown);
+    window.removeEventListener('keyup', onNavKeyUp);
   });
 
   function popUp(lon, lat, html) {
@@ -477,7 +628,7 @@ document.onreadystatechange = async () => {
       popup.remove();
     }
 
-    popup = new mapboxgl.Popup()
+    popup = new maplibregl.Popup()
       .setLngLat([lon, lat])
       .setHTML('<div style="max-height: 300px; overflow: auto">' + html + '</div>')
       .addTo(map);
@@ -564,8 +715,8 @@ document.onreadystatechange = async () => {
   map.on('load', () => {
 
     map.addSource('nominatim-regions', {
-      type: 'geojson',
-      data: null
+      type:       'geojson',
+      data:       { type: 'FeatureCollection', features: [] }
     });
 
     if(app.vue.state.theme === "dark") {
@@ -597,29 +748,44 @@ document.onreadystatechange = async () => {
       type:   "symbol",
       source: 'nominatim-regions',
       layout: {
-        "text-field": "{displayname}{name}\n{administration}",
-        "text-font":  ["Open Sans Bold"],
+        "text-field": "{displayname}{name}",
+        "text-font":  ["Roboto Bold"],
         "text-size":  20,
-        // "text-offset":        [0, 0.5],
         "icon-size":      1,
         "text-anchor":    "center",
         "text-justify":   "center",
         "text-max-width": 30,
-        // "icon-allow-overlap": true,
-        // "icon-optional":      true,
         "icon-pitch-alignment": "viewport",
         "icon-text-fit":        "none",
-        // "text-offset":  [0, 10],
-        // "text-rotation-alignment": "map"
-        // "symbol-placement": "line-center",
-
-        // "line-cap": "square",
-        // "line-join": "bevel"
       },
       paint:  {
         "text-color":      "#333333",
         "text-halo-width": 1,
         "text-halo-color": "rgba(255,255,255,255.75)",
+        "text-halo-blur":  1,
+      }
+    });
+
+    map.addLayer({
+      id:     'search-result-administration',
+      type:   "symbol",
+      source: 'nominatim-regions',
+      layout: {
+        "text-field": "{administration}",
+        "text-font":  ["Roboto Bold"],
+        "text-size":  20,
+        "text-offset": [0, 1.2],
+        "icon-size":  1,
+        "text-anchor": "center",
+        "text-justify": "center",
+        "text-max-width": 30,
+        "icon-pitch-alignment": "viewport",
+        "icon-text-fit": "none",
+      },
+      paint:  {
+        "text-color":      "rgba(51, 51, 51, 0.7)",
+        "text-halo-width": 1,
+        "text-halo-color": "rgba(255,255,255,0.75)",
         "text-halo-blur":  1,
       }
     });
@@ -648,8 +814,8 @@ document.onreadystatechange = async () => {
     // });
 
     map.addSource('geoid-regions', {
-      type: 'geojson',
-      data: null
+      type:       'geojson',
+      data:       { type: 'FeatureCollection', features: [] }
     });
 
     map.addLayer({
@@ -658,7 +824,7 @@ document.onreadystatechange = async () => {
       'source': 'geoid-regions',
       'layout': {
         // "text-field": "{display_name}",
-        // "text-font":  ["Open Sans Bold"],
+        // "text-font":  ["Roboto Bold"],
         // "text-size":  12,
       },
       'paint':  {
@@ -680,11 +846,11 @@ document.onreadystatechange = async () => {
       map.getCanvas().style.cursor = '';
     });
 
-    map.addControl(new mapboxgl.NavigationControl(), 'bottom-right');
-    map.addControl(new mapboxgl.FullscreenControl());
+    map.addControl(new maplibregl.NavigationControl(), 'bottom-right');
+    map.addControl(new maplibregl.FullscreenControl());
 
     map.addControl(
-      new mapboxgl.GeolocateControl({
+      new maplibregl.GeolocateControl({
         positionOptions:   {
           enableHighAccuracy: true
         },
