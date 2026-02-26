@@ -18,6 +18,10 @@ Game-style controls (disabled when typing in inputs):
 | **←** | Roll left (bearing) |
 | **→** | Roll right (bearing) |
 
+## PWA
+
+The app is installable as a Progressive Web App. Use **Add to Home Screen** in mobile browsers or install via Chrome's app menu on desktop. Uses `images/gis-icon.png` as the app icon.
+
 ## Map Toggles
 
 - **ESRI Satellite** – ESRI imagery basemap (off by default)

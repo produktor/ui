@@ -222,6 +222,7 @@ document.onreadystatechange = async () => { if(document.readyState !==
       this.state.osmVector = this.state.osmVector ?? true;
       this.state.globe = this.state.globe ?? false;
       this.state.buildings3d = this.state.buildings3d ?? true;
+      this.state.model3d = this.state.model3d ?? false;
     },
 
     methods: {
@@ -434,6 +435,21 @@ document.onreadystatechange = async () => { if(document.readyState !==
             (val && app.vue.state.osmVector) ? 'visible' : 'none');
         }
       },
+      'state.model3d'(val) {
+        if (!app.map || !app.map.isStyleLoaded()) return;
+        if (val && !app.map.getLayer('3d-model')) {
+          app.map.addLayer(create3dModelLayer());
+          app.map.flyTo({
+            center: MODEL_ORIGIN,
+            zoom: 18,
+            pitch: 60,
+            bearing: 0,
+            essential: true
+          });
+        } else if (!val && app.map.getLayer('3d-model')) {
+          app.map.removeLayer('3d-model');
+        }
+      },
       'state.globe'(val) {
         if (app.map && typeof app.map.setProjection === 'function') {
           app.map.setProjection({ type: val ? 'globe' : 'mercator' });
@@ -511,17 +527,100 @@ document.onreadystatechange = async () => { if(document.readyState !==
   style.sprite = base + 'styles/osm-liberty-gl-style/sprites/osm-liberty';
 
   app.map = map = new maplibregl.Map({
-    container:           'map',
-    style:               style,
-    hash:                true,
-    refreshExpiredTiles: false,
-    boxZoom:             false,
-    maxPitch:            80,
-    center:              [-16.4944, 28.2732],
-    zoom:                11.76,
-    bearing:             -85.8,
-    pitch:               72
+    container:               'map',
+    style:                   style,
+    hash:                    true,
+    refreshExpiredTiles:     false,
+    boxZoom:                 false,
+    maxPitch:                80,
+    center:                  [-16.4944, 28.2732],
+    zoom:                    11.76,
+    bearing:                 -85.8,
+    pitch:                  72,
+    canvasContextAttributes: { antialias: true }
   });
+
+  // 3D model layer: syncs model positions (meters) to map coordinates via Mercator transform
+  const MODEL_ORIGIN = [-16.249176, 28.454888];
+  const MODEL_ALTITUDE = 0;
+  const MODEL_ROTATE = [Math.PI / 2, 0, 0];
+
+  function create3dModelLayer() {
+    const modelAsMercator = maplibregl.MercatorCoordinate.fromLngLat(MODEL_ORIGIN, MODEL_ALTITUDE);
+    const modelTransform = {
+      translateX: modelAsMercator.x,
+      translateY: modelAsMercator.y,
+      translateZ: modelAsMercator.z,
+      rotateX:    MODEL_ROTATE[0],
+      rotateY:    MODEL_ROTATE[1],
+      rotateZ:    MODEL_ROTATE[2],
+      scale:      modelAsMercator.meterInMercatorCoordinateUnits()
+    };
+
+    return {
+      id:            '3d-model',
+      type:          'custom',
+      renderingMode: '3d',
+      onAdd(map, gl) {
+        this.camera = new THREE.Camera();
+        this.scene = new THREE.Scene();
+        const d1 = new THREE.DirectionalLight(0xffffff);
+        d1.position.set(0, -70, 100).normalize();
+        this.scene.add(d1);
+        const d2 = new THREE.DirectionalLight(0xffffff);
+        d2.position.set(0, 70, 100).normalize();
+        this.scene.add(d2);
+
+        const positions = [
+          { x: 0, y: 0, z: 0 },
+          { x: 50, y: 0, z: 0 },
+          { x: -50, y: 0, z: 0 },
+          { x: 0, y: 50, z: 0 },
+          { x: 0, y: -50, z: 0 },
+          { x: 35, y: 35, z: 0 },
+          { x: -35, y: -35, z: 0 },
+          { x: 35, y: -35, z: 0 },
+          { x: -35, y: 35, z: 0 }
+        ];
+
+        const loader = new THREE.GLTFLoader();
+        loader.load(
+          'https://docs.mapbox.com/mapbox-gl-js/assets/34M_17/34M_17.gltf',
+          (gltf) => {
+            positions.forEach((pos, i) => {
+              const inst = gltf.scene.clone();
+              inst.position.set(pos.x, pos.y, pos.z);
+              inst.rotation.y = i * Math.PI / 4;
+              this.scene.add(inst);
+            });
+          }
+        );
+
+        this.map = map;
+        this.renderer = new THREE.WebGLRenderer({
+          canvas:  map.getCanvas(),
+          context: gl,
+          antialias: true
+        });
+        this.renderer.autoClear = false;
+        this.modelTransform = modelTransform;
+      },
+      render(gl, matrix) {
+        const mt = this.modelTransform;
+        const m = new THREE.Matrix4().fromArray(matrix);
+        const l = new THREE.Matrix4()
+          .makeTranslation(mt.translateX, mt.translateY, mt.translateZ)
+          .scale(new THREE.Vector3(mt.scale, -mt.scale, mt.scale))
+          .multiply(new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(1, 0, 0), mt.rotateX))
+          .multiply(new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0, 1, 0), mt.rotateY))
+          .multiply(new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0, 0, 1), mt.rotateZ));
+        this.camera.projectionMatrix = m.multiply(l);
+        this.renderer.state.reset();
+        this.renderer.render(this.scene, this.camera);
+        this.map.triggerRepaint();
+      }
+    };
+  }
 
   const tilesLoadingEl = document.getElementById('map-tiles-loading');
   const mapStatsEl = document.getElementById('map-stats');
@@ -887,6 +986,11 @@ document.onreadystatechange = async () => { if(document.readyState !==
       map.getCanvas().style.cursor = '';
     });
 
+    if (app.vue.state.model3d && !map.getLayer('3d-model')) {
+      map.addLayer(create3dModelLayer());
+      map.flyTo({ center: MODEL_ORIGIN, zoom: 18, pitch: 60, bearing: 0, essential: true });
+    }
+
     map.addControl(new maplibregl.NavigationControl(), 'bottom-right');
     map.addControl(new maplibregl.FullscreenControl());
 
@@ -899,4 +1003,8 @@ document.onreadystatechange = async () => { if(document.readyState !==
       })
     );
   });
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  }
 };
