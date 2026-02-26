@@ -579,7 +579,7 @@ document.onreadystatechange = async () => { if(document.readyState !==
 
         const loader = new THREE.GLTFLoader();
         loader.load(
-          'assets/gltf/scene.gltf',
+          'https://docs.mapbox.com/mapbox-gl-js/assets/34M_17/34M_17.gltf',
           (gltf) => {
             const model = gltf.scene.clone();
             model.position.set(0, 0, 0);
