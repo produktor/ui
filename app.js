@@ -101,7 +101,7 @@ document.onreadystatechange = async () => { if(document.readyState !==
     el:      '#app',
     vuetify: new Vuetify({
       theme: {
-        dark: true
+        dark: false
       }
     }),
 
@@ -235,8 +235,8 @@ document.onreadystatechange = async () => { if(document.readyState !==
     }),
 
     created() {
-      this.state = localStorage.immoMapState ? JSON.parse(localStorage.immoMapState) : {theme: 'dark'};
-      this.state.esriSatellite = this.state.esriSatellite ?? false;
+      this.state = localStorage.immoMapState ? JSON.parse(localStorage.immoMapState) : {theme: 'light'};
+      this.state.esriSatellite = this.state.esriSatellite ?? true;
       this.state.jaxaTerrainRgb = this.state.jaxaTerrainRgb ?? false;
       this.state.hillshades = this.state.hillshades ?? true;
       this.state.osmVector = this.state.osmVector ?? true;
@@ -527,10 +527,10 @@ document.onreadystatechange = async () => { if(document.readyState !==
     refreshExpiredTiles: false,
     boxZoom:             false,
     maxPitch:            80,
-    center:              [-16.5262, 28.1597],
-    zoom:                11.05,
-    bearing:             0,
-    pitch:               55
+    center:              [-16.4944, 28.2732],
+    zoom:                11.76,
+    bearing:             -85.8,
+    pitch:               72
   });
 
   map.on('load', () => {
