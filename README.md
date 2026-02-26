@@ -6,17 +6,15 @@ Map application built with Vue, Vuetify, and MapLibre GL.
 
 Game-style controls (disabled when typing in inputs):
 
-| Key   | Action                 |
-| ----- | ---------------------- |
-| **W** | Zoom in                |
-| **S** | Zoom out               |
-| **A** | Slide right (pan east) |
-| **D** | Slide left (pan west)  |
-| **F** | Invert bearing (+180°) |
-| **↑** | Roll up (pitch)        |
-| **↓** | Roll down (pitch)      |
-| **←** | Roll left (bearing)    |
-| **→** | Roll right (bearing)   |
+| Key Combo | Action                          |
+| --------- | ------------------------------- |
+| **W + ↑** | Fly forward (shooter-style)     |
+| **S + ↓** | Fly backward (shooter-style)    |
+| **A**     | Slide left (pan west)           |
+| **D**     | Slide right (pan east)          |
+
+Keyboard zoom and keyboard rotation are disabled. Mouse interactions remain unchanged.
+Forward/back movement is combo-only: hold both keys together (`W` + `ArrowUp`, `S` + `ArrowDown`).
 
 ## PWA
 

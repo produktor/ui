@@ -774,27 +774,31 @@ document.onreadystatechange = async () => { if(document.readyState !==
     map.addImage(id, { width: size, height: size, data }, { pixelRatio: 1 });
   });
 
-  // Keyboard navigation: W zoom in, S zoom out, A slide left, D slide right, F invert, arrows roll
+  // Keyboard navigation: combo flight (W+Up / S+Down) and lateral slide (A / D).
   const navKeys = new Set();
-  const ZOOM_SPEED = 0.08;
   const PAN_SPEED = 12;
-  const PITCH_SPEED = 1.5;
-  const BEARING_SPEED = 2;
-  const PITCH_MIN = 0;
-  const PITCH_MAX = 80;
+  const FLIGHT_SPEED = 12;
+
+  const normalizeNavKey = (key) => {
+    if (typeof key !== 'string') return key;
+    if (key.length === 1) return key.toLowerCase();
+    return key;
+  };
 
   const navStep = () => {
     if (navKeys.size === 0) return;
-    navKeys.forEach(k => {
-      if (k === 'w') map.zoomTo(map.getZoom() + ZOOM_SPEED, { duration: 0 });
-      if (k === 's') map.zoomTo(map.getZoom() - ZOOM_SPEED, { duration: 0 });
-      if (k === 'a') map.panBy([-PAN_SPEED, 0], { duration: 0 });
-      if (k === 'd') map.panBy([PAN_SPEED, 0], { duration: 0 });
-      if (k === 'ArrowUp') map.setPitch(Math.min(PITCH_MAX, map.getPitch() + PITCH_SPEED));
-      if (k === 'ArrowDown') map.setPitch(Math.max(PITCH_MIN, map.getPitch() - PITCH_SPEED));
-      if (k === 'ArrowLeft') map.setBearing(map.getBearing() - BEARING_SPEED);
-      if (k === 'ArrowRight') map.setBearing(map.getBearing() + BEARING_SPEED);
-    });
+    if (navKeys.has('a')) map.panBy([-PAN_SPEED, 0], { duration: 0 });
+    if (navKeys.has('d')) map.panBy([PAN_SPEED, 0], { duration: 0 });
+
+    const isForward = navKeys.has('w') && navKeys.has('ArrowUp');
+    const isBackward = navKeys.has('s') && navKeys.has('ArrowDown');
+    if (isForward === isBackward) return;
+
+    const direction = isForward ? 1 : -1;
+    const bearingRad = (map.getBearing() * Math.PI) / 180;
+    const dx = Math.sin(bearingRad) * FLIGHT_SPEED * direction;
+    const dy = -Math.cos(bearingRad) * FLIGHT_SPEED * direction;
+    map.panBy([dx, dy], { duration: 0 });
   };
 
   let navFrame = 0;
@@ -806,17 +810,13 @@ document.onreadystatechange = async () => { if(document.readyState !==
 
   const onNavKeyDown = (e) => {
     if (document.activeElement && document.activeElement.closest('input, textarea, [contenteditable="true"]')) return;
-    const k = e.key;
-    if (['w', 's', 'a', 'd', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(k)) {
+    const k = normalizeNavKey(e.key);
+    if (['w', 's', 'a', 'd', 'ArrowUp', 'ArrowDown'].includes(k)) {
       e.preventDefault();
       navKeys.add(k);
     }
-    if (k === 'f') {
-      e.preventDefault();
-      map.setBearing((map.getBearing() + 180) % 360);
-    }
   };
-  const onNavKeyUp = (e) => navKeys.delete(e.key);
+  const onNavKeyUp = (e) => navKeys.delete(normalizeNavKey(e.key));
   window.addEventListener('keydown', onNavKeyDown);
   window.addEventListener('keyup', onNavKeyUp);
 
