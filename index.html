@@ -39,7 +39,7 @@
 
 <div id="app" style="display: none">
 		<v-app id="inspire">
-		<v-btn id="menu-toggle-btn" class="menu-toggle-btn" icon @click.stop="drawer = !drawer" :style="{ left: drawer ? '266px' : '10px' }" aria-label="Open menu">
+		<v-btn v-if="!isShareCameraMode" id="menu-toggle-btn" class="menu-toggle-btn" icon @click.stop="drawer = !drawer" :style="{ left: drawer ? '266px' : '10px' }" aria-label="Open menu">
 			<v-icon>mdi-menu</v-icon>
 		</v-btn>
 		<v-navigation-drawer v-model="drawer" app height="100%" width="256">
@@ -79,7 +79,7 @@
 						<v-list-item
 							v-for="(child, i) in item.children"
 							:key="child.id"
-							@click="currentFrame=child"
+							@click="openFrame(child)"
 							:class="{ 'v-list-item--active': currentFrame && currentFrame.id === child.id }"
 							link
 						>
@@ -96,7 +96,7 @@
 					<v-list-item
 						v-else-if="item.id"
 						:key="item.text"
-						@click="currentFrame=item"
+						@click="openFrame(item)"
 						:class="{ 'v-list-item--active': currentFrame && currentFrame.id === item.id }"
 						link
 					>
@@ -206,7 +206,7 @@
 					</v-list-item>
 					<v-list-item>
 						<v-switch
-							prepend-icon="mdi-bug"
+							prepend-icon="mdi-bug"https://x.com/HumansNoContext/status/2026811723726921950
 							v-model="state.isDebug"
 							color="red"
 							hide-details
@@ -263,14 +263,20 @@
 		<v-main class="map-full-height">
 				<v-row no-gutters :style=" snackbarText && state.isDebug?'height: 85%':'height: 100%'" fluid class="fill-height">
 					<v-col v-if="currentFrame !== null" cols="12" class="flex-grow-1 module-panel-col" fluid>
-						<v-card class="pa-2 module-frame-card" flat v-if="currentFrame" fluid >
-							<v-subheader class="pa-0">
+						<v-card
+							class="pa-2 module-frame-card"
+							:class="{ 'module-frame-card--camera': isShareCameraMode && currentFrame && currentFrame.id === 'product-serve' }"
+							flat
+							v-if="currentFrame"
+							fluid
+						>
+							<v-subheader class="pa-0" v-if="!(isShareCameraMode && currentFrame && currentFrame.id === 'product-serve')">
 								<v-card-title class="headline flex-lg-nowrap">{{ currentFrame.text }}</v-card-title>
 								<v-spacer></v-spacer>
 								<v-icon @click="currentFrame = null; " right>mdi-close-circle</v-icon>
 							</v-subheader>
-							<v-divider></v-divider>
-							<div class="module-content-scroll">
+							<v-divider v-if="!(isShareCameraMode && currentFrame && currentFrame.id === 'product-serve')"></v-divider>
+							<div class="module-content-scroll" :class="{ 'module-content-scroll--camera': isShareCameraMode && currentFrame && currentFrame.id === 'product-serve' }">
 							<component :is="currentFrame.id"
 												 :frame="currentFrame"
 												 :app="app"
@@ -283,7 +289,7 @@
 
 						</v-card>
 					</v-col>
-					<v-col :cols="currentFrame?6:12" style="min-width: 100px; max-width: 100%;" class="flex-grow-1 flex-shrink-0 fill-height">
+					<v-col v-if="!isShareCameraMode" :cols="currentFrame?6:12" style="min-width: 100px; max-width: 100%;" class="flex-grow-1 flex-shrink-0 fill-height">
 						<div id="map" class="map-container" :class="{ 'globe-mode': state.globe }" style="width: 100%; height: 100%">
 							<div class="map-bottom-bar">
 								<div id="map-stats" class="map-stats" aria-label="Map statistics"></div>

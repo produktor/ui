@@ -4,6 +4,7 @@ document.onreadystatechange = async () => { if(document.readyState !==
   "complete") { return; }
 
   let vue, map; let layerName = 'immo'; let popup; let poiPopup;
+  const moduleCacheBuster = `v=${Math.random().toString(36).slice(2)}`;
 
   // Import components (await
   // import('./components/button-counter.js')).default(); Vue.config.silent =
@@ -49,9 +50,9 @@ document.onreadystatechange = async () => { if(document.readyState !==
 
   // Preload utils & libraries
   const app = window.app = {
-    geo:  await import('./components/geo.js'),
-    net:  await import('./components/net.js'),
-    html: await import('./components/html.js')
+    geo:  await import(`./components/geo.js?${moduleCacheBuster}`),
+    net:  await import(`./components/net.js?${moduleCacheBuster}`),
+    html: await import(`./components/html.js?${moduleCacheBuster}`)
   };
 
   // Preload components
@@ -64,7 +65,7 @@ document.onreadystatechange = async () => { if(document.readyState !==
       if(item.id in Vue.options.components) continue;
 
       let path = item.id.replace("-", "/");
-      await import('./components/' + path + '.js');
+      await import(`./components/${path}.js?${moduleCacheBuster}`);
     }
   }
 
@@ -211,6 +212,7 @@ document.onreadystatechange = async () => { if(document.readyState !==
       items: menuItems,
 
       projectOpen: false,
+      isShareCameraMode: false
     }),
 
     created() {
@@ -364,6 +366,14 @@ document.onreadystatechange = async () => { if(document.readyState !==
         });
       },
 
+      openFrame(frame) {
+        if(!frame || !frame.id) return;
+        this.currentFrame = null;
+        this.$nextTick(() => {
+          this.currentFrame = { ...frame };
+        });
+      },
+
       // Copy versions to clipboard
       copyVersionsToClipboard() {
         /* Get the text field */
@@ -382,6 +392,27 @@ document.onreadystatechange = async () => { if(document.readyState !==
         window.getSelection().addRange(r);
         document.execCommand('copy');
         window.getSelection().removeAllRanges();
+      },
+
+      setMapInteractionEnabled(isEnabled) {
+        if(!app.map) return;
+        [
+          'dragPan',
+          'scrollZoom',
+          'boxZoom',
+          'dragRotate',
+          'keyboard',
+          'doubleClickZoom',
+          'touchZoomRotate'
+        ].forEach(handlerName => {
+          const handler = app.map[handlerName];
+          if(!handler || !handler.enable || !handler.disable) return;
+          if(isEnabled) {
+            handler.enable();
+          } else {
+            handler.disable();
+          }
+        });
       },
 
       saveState(key, value) {
@@ -493,6 +524,16 @@ document.onreadystatechange = async () => { if(document.readyState !==
       async currentFrame(val, oldValue) {
         window.setTimeout(() => window.dispatchEvent(new Event('resize')));
       },
+
+      isShareCameraMode(val) {
+        if(val) {
+          this.drawer = false;
+          this.setMapInteractionEnabled(false);
+        } else {
+          this.setMapInteractionEnabled(true);
+        }
+        window.setTimeout(() => window.dispatchEvent(new Event('resize')));
+      },
       //
       // currentFeature(val, oldValue) {
       //   window.setTimeout(() => window.dispatchEvent(new Event('resize')));
@@ -579,8 +620,8 @@ document.onreadystatechange = async () => { if(document.readyState !==
 
         const loader = new THREE.GLTFLoader();
         loader.load(
-          'https://docs.mapbox.com/mapbox-gl-js/assets/34M_17/34M_17.gltf',
-          (gltf) => {
+          'assets/gltf/scene.gltf',
+          (gltf) => { 
             const model = gltf.scene.clone();
             model.position.set(0, 0, 0);
             this.scene.add(model);
