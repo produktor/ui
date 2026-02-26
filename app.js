@@ -546,7 +546,13 @@ document.onreadystatechange = async () => { if(document.readyState !==
   const MODEL_ROTATE = [Math.PI / 2, 0, 0];
 
   function create3dModelLayer() {
-    const modelAsMercator = maplibregl.MercatorCoordinate.fromLngLat(MODEL_ORIGIN, MODEL_ALTITUDE);
+    const initialTerrainElevation = typeof map.queryTerrainElevation === 'function'
+      ? (map.queryTerrainElevation(MODEL_ORIGIN) || 0)
+      : 0;
+    const modelAsMercator = maplibregl.MercatorCoordinate.fromLngLat(
+      MODEL_ORIGIN,
+      MODEL_ALTITUDE + initialTerrainElevation
+    );
     const modelTransform = {
       translateX: modelAsMercator.x,
       translateY: modelAsMercator.y,
@@ -605,9 +611,26 @@ document.onreadystatechange = async () => { if(document.readyState !==
         this.renderer.autoClear = false;
         this.modelTransform = modelTransform;
       },
-      render(gl, matrix) {
+      render(gl, matrixOrArgs) {
         const mt = this.modelTransform;
-        const m = new THREE.Matrix4().fromArray(matrix);
+        const terrainElevation = typeof this.map.queryTerrainElevation === 'function'
+          ? (this.map.queryTerrainElevation(MODEL_ORIGIN) || 0)
+          : 0;
+        const modelAtTerrain = maplibregl.MercatorCoordinate.fromLngLat(
+          MODEL_ORIGIN,
+          MODEL_ALTITUDE + terrainElevation
+        );
+        mt.translateX = modelAtTerrain.x;
+        mt.translateY = modelAtTerrain.y;
+        mt.translateZ = modelAtTerrain.z;
+        mt.scale = modelAtTerrain.meterInMercatorCoordinateUnits();
+
+        const projectionMatrix = (
+          matrixOrArgs &&
+          matrixOrArgs.defaultProjectionData &&
+          matrixOrArgs.defaultProjectionData.mainMatrix
+        ) || matrixOrArgs;
+        const m = new THREE.Matrix4().fromArray(projectionMatrix);
         const l = new THREE.Matrix4()
           .makeTranslation(mt.translateX, mt.translateY, mt.translateZ)
           .scale(new THREE.Vector3(mt.scale, -mt.scale, mt.scale))
@@ -615,7 +638,11 @@ document.onreadystatechange = async () => { if(document.readyState !==
           .multiply(new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0, 1, 0), mt.rotateY))
           .multiply(new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0, 0, 1), mt.rotateZ));
         this.camera.projectionMatrix = m.multiply(l);
-        this.renderer.state.reset();
+        if (typeof this.renderer.resetState === 'function') {
+          this.renderer.resetState();
+        } else {
+          this.renderer.state.reset();
+        }
         this.renderer.render(this.scene, this.camera);
         this.map.triggerRepaint();
       }
