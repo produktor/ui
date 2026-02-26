@@ -1,22 +1,24 @@
 {
+  "id": "/",
   "name": "Produktor.io",
   "short_name": "Produktor",
   "description": "Map application built with Vue, Vuetify, and MapLibre GL",
-  "start_url": ".",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "orientation": "any",
   "background_color": "#efefef",
   "theme_color": "#fbb900",
   "icons": [
     {
-      "src": "images/gis-icon.png",
-      "sizes": "342x343",
+      "src": "images/gis-icon-192.png",
+      "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "images/gis-icon.png",
-      "sizes": "342x343",
+      "src": "images/gis-icon-512.png",
+      "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
     }

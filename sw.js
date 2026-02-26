@@ -1,4 +1,4 @@
-const CACHE_NAME = 'produktor-v1';
+const CACHE_NAME = 'produktor-v2';
 const SHELL_URLS = [
   './',
   './index.html',
@@ -11,7 +11,10 @@ const SHELL_URLS = [
   './assets/vuetify/vuetify.min.js',
   './js/maplibre-gl.js',
   './js/wicket.js',
-  './images/gis-icon.png'
+  './images/gis-icon.png',
+  './images/gis-icon-192.png',
+  './images/gis-icon-512.png',
+  './favicon.ico'
 ];
 
 self.addEventListener('install', (event) => {

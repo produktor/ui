@@ -49,9 +49,9 @@ document.onreadystatechange = async () => { if(document.readyState !==
 
   // Preload utils & libraries
   const app = window.app = {
-    geo:  await import('./components/geo.js?v=' + Math.random()),
-    net:  await import('./components/net.js?v=' + Math.random()),
-    html: await import('./components/html.js?v=' + Math.random())
+    geo:  await import('./components/geo.js'),
+    net:  await import('./components/net.js'),
+    html: await import('./components/html.js')
   };
 
   // Preload components
@@ -64,7 +64,7 @@ document.onreadystatechange = async () => { if(document.readyState !==
       if(item.id in Vue.options.components) continue;
 
       let path = item.id.replace("-", "/");
-      await import('./components/' + path + '.js?v=' + Math.random());
+      await import('./components/' + path + '.js');
     }
   }
 
@@ -521,7 +521,7 @@ document.onreadystatechange = async () => { if(document.readyState !==
 
   // Load style with absolute URLs for glyphs/sprite (MapLibre requires scheme+authority+path)
   const base = new URL('.', window.location.href).href.replace(/\/$/, '') + '/';
-  const styleResp = await fetch('styles/osm-liberty-gl-style/style.json?x=' + Math.random());
+  const styleResp = await fetch('styles/osm-liberty-gl-style/style.json');
   const style = await styleResp.json();
   style.glyphs = base + 'assets/fonts/map-fonts/{fontstack}/{range}.pbf';
   style.sprite = base + 'styles/osm-liberty-gl-style/sprites/osm-liberty';
