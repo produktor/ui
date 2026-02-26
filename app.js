@@ -577,28 +577,13 @@ document.onreadystatechange = async () => { if(document.readyState !==
         d2.position.set(0, 70, 100).normalize();
         this.scene.add(d2);
 
-        const positions = [
-          { x: 0, y: 0, z: 0 },
-          { x: 50, y: 0, z: 0 },
-          { x: -50, y: 0, z: 0 },
-          { x: 0, y: 50, z: 0 },
-          { x: 0, y: -50, z: 0 },
-          { x: 35, y: 35, z: 0 },
-          { x: -35, y: -35, z: 0 },
-          { x: 35, y: -35, z: 0 },
-          { x: -35, y: 35, z: 0 }
-        ];
-
         const loader = new THREE.GLTFLoader();
         loader.load(
-          'https://docs.mapbox.com/mapbox-gl-js/assets/34M_17/34M_17.gltf',
+          'assets/gltf/scene.gltf',
           (gltf) => {
-            positions.forEach((pos, i) => {
-              const inst = gltf.scene.clone();
-              inst.position.set(pos.x, pos.y, pos.z);
-              inst.rotation.y = i * Math.PI / 4;
-              this.scene.add(inst);
-            });
+            const model = gltf.scene.clone();
+            model.position.set(0, 0, 0);
+            this.scene.add(model);
           }
         );
 

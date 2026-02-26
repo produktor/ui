@@ -1,0 +1,452 @@
+{
+  "accessors": [
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 9253,
+      "max": [
+        14.820001602172852,
+        18.314895629882813,
+        6.050000190734863
+      ],
+      "min": [
+        -14.820000648498535,
+        -0.1008068099617958,
+        -5.750000476837158
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 111036,
+      "componentType": 5126,
+      "count": 9253,
+      "max": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "min": [
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 9253,
+      "max": [
+        0.9943918585777283,
+        0.9065395593643188
+      ],
+      "min": [
+        0.00759163498878479,
+        0.004832327365875244
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "componentType": 5125,
+      "count": 14976,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 222072,
+      "componentType": 5126,
+      "count": 5376,
+      "max": [
+        14.901921272277832,
+        10.86865520477295,
+        0.07000001519918442
+      ],
+      "min": [
+        -14.901918411254883,
+        -1.068655014038086,
+        -3.0597989559173584
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 286584,
+      "componentType": 5126,
+      "count": 5376,
+      "max": [
+        0.9671601057052612,
+        0.9671604633331299,
+        1.0
+      ],
+      "min": [
+        -0.9671601057052612,
+        -0.9671679735183716,
+        -1.0
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 74024,
+      "componentType": 5126,
+      "count": 5376,
+      "max": [
+        0.28116145730018616,
+        0.9977146983146667
+      ],
+      "min": [
+        0.03287970647215843,
+        0.8960599899291992
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 59904,
+      "componentType": 5125,
+      "count": 8160,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 351096,
+      "componentType": 5126,
+      "count": 52,
+      "max": [
+        1.100000023841858,
+        1.29197096824646,
+        2.690253257751465
+      ],
+      "min": [
+        -1.100000023841858,
+        -0.2919711470603943,
+        -0.20294401049613953
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 351720,
+      "componentType": 5126,
+      "count": 52,
+      "max": [
+        1.0,
+        0.7071072459220886,
+        0.9830657243728638
+      ],
+      "min": [
+        -1.0,
+        -0.9848076701164246,
+        -0.9830657243728638
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 117032,
+      "componentType": 5126,
+      "count": 52,
+      "max": [
+        0.6889395117759705,
+        0.7643178105354309
+      ],
+      "min": [
+        0.19654560089111328,
+        0.23880289494991302
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 92544,
+      "componentType": 5125,
+      "count": 78,
+      "type": "SCALAR"
+    }
+  ],
+  "asset": {
+    "extras": {
+      "author": "Ferya1L (https://sketchfab.com/Ferya1L)",
+      "license": "CC-BY-SA-4.0 (http://creativecommons.org/licenses/by-sa/4.0/)",
+      "source": "https://sketchfab.com/3d-models/lowpoly-panelka-psx-bbf751f299d74186a79446b92cc21d73",
+      "title": "LowPoly Panelka psX"
+    },
+    "generator": "Sketchfab-16.93.0",
+    "version": "2.0"
+  },
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 92856,
+      "name": "floatBufferViews",
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 117448,
+      "byteOffset": 92856,
+      "byteStride": 8,
+      "name": "floatBufferViews",
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 352344,
+      "byteOffset": 210304,
+      "byteStride": 12,
+      "name": "floatBufferViews",
+      "target": 34962
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 562648,
+      "uri": "scene.bin"
+    }
+  ],
+  "extensionsUsed": [
+    "KHR_materials_specular"
+  ],
+  "images": [
+    {
+      "uri": "textures/PanelkaMat_baseColor.png"
+    }
+  ],
+  "materials": [
+    {
+      "alphaMode": "MASK",
+      "doubleSided": true,
+      "extensions": {
+        "KHR_materials_specular": {
+          "specularColorFactor": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "specularFactor": 0.0
+        }
+      },
+      "name": "PanelkaMat",
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 0
+        },
+        "metallicFactor": 0.0
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "name": "Panelka_PanelkaMat_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 1,
+            "POSITION": 0,
+            "TEXCOORD_0": 2
+          },
+          "indices": 3,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "Pipes_PanelkaMat_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 5,
+            "POSITION": 4,
+            "TEXCOORD_0": 6
+          },
+          "indices": 7,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "Vsor_PanelkaMat_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 9,
+            "POSITION": 8,
+            "TEXCOORD_0": 10
+          },
+          "indices": 11,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "children": [
+        1
+      ],
+      "matrix": [
+        0.9090909361839294,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        3.480517078462073e-16,
+        -0.9090909361839294,
+        0.0,
+        0.0,
+        0.9090909361839294,
+        3.480517078462073e-16,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "Sketchfab_model"
+    },
+    {
+      "children": [
+        2
+      ],
+      "matrix": [
+        0.009999999776482582,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.009999999776482582,
+        0.0,
+        0.0,
+        -0.009999999776482582,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "Panelka.fbx"
+    },
+    {
+      "children": [
+        3
+      ],
+      "name": "RootNode"
+    },
+    {
+      "children": [
+        4,
+        5,
+        7
+      ],
+      "matrix": [
+        100.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        99.9999999999999,
+        4.371138828673792e-06,
+        0.0,
+        0.0,
+        -4.371138828673792e-06,
+        99.9999999999999,
+        0.0,
+        9.5367431640625e-05,
+        1.5088558197021484,
+        -7.046177864074707,
+        1.0
+      ],
+      "name": "Panelka"
+    },
+    {
+      "mesh": 0,
+      "name": "Panelka_PanelkaMat_0"
+    },
+    {
+      "children": [
+        6
+      ],
+      "matrix": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -1.6292067939183141e-07,
+        -0.9999999999999868,
+        0.0,
+        0.0,
+        0.9999999999999868,
+        -1.6292067939183141e-07,
+        0.0,
+        1.9371509552001953e-07,
+        2.9000003337860107,
+        4.950000286102295,
+        1.0
+      ],
+      "name": "Pipes"
+    },
+    {
+      "mesh": 1,
+      "name": "Pipes_PanelkaMat_0"
+    },
+    {
+      "children": [
+        8
+      ],
+      "matrix": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -1.6292067939183141e-07,
+        -0.9999999999999868,
+        0.0,
+        0.0,
+        0.9999999999999868,
+        -1.6292067939183141e-07,
+        0.0,
+        0.0,
+        2.619823078475747e-07,
+        6.0,
+        1.0
+      ],
+      "name": "Vsor"
+    },
+    {
+      "mesh": 2,
+      "name": "Vsor_PanelkaMat_0"
+    }
+  ],
+  "samplers": [
+    {
+      "magFilter": 9729,
+      "minFilter": 9987,
+      "wrapS": 10497,
+      "wrapT": 10497
+    }
+  ],
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "Sketchfab_Scene",
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "textures": [
+    {
+      "sampler": 0,
+      "source": 0
+    }
+  ]
+}
