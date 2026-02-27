@@ -172,7 +172,7 @@
           });
         } else {
           this.$emit('select', feature);
-        }Giving product away
+        }
       },
 
       // on input

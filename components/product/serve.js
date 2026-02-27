@@ -1,12 +1,13 @@
 (() => {
-  const CARD_STORAGE_KEY = 'produktorProductShareCardsV1';
+  const CARD_STORAGE_KEY = 'produktorProductShareCardsV2';
+  const LEGACY_CARD_STORAGE_KEY = 'produktorProductShareCardsV1';
   const DETECTION_COLORS = ['#ff4d4f', '#40a9ff', '#73d13d', '#ffa940', '#b37feb', '#13c2c2'];
   const detectorState = {
     detector: null,
     loader: null
   };
 
-  function loadScript(src) {
+  function loadScriptLocal(src) {
     return new Promise((resolve, reject) => {
       if (document.querySelector(`script[src="${src}"]`)) {
         resolve();
@@ -24,15 +25,27 @@
   async function getDetector() {
     if (detectorState.detector) return detectorState.detector;
     if (!detectorState.loader) {
+      const loadScriptOnce = (window.app && window.app.loadScriptOnce) || loadScriptLocal;
       detectorState.loader = (async () => {
-        await loadScript('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.20.0/dist/tf.min.js');
-        await loadScript('https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js');
+        await loadScriptOnce('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.20.0/dist/tf.min.js');
+        await loadScriptOnce('https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js');
         await window.tf.ready();
         detectorState.detector = await window.cocoSsd.load({ base: 'lite_mobilenet_v2' });
         return detectorState.detector;
-      })();
+      })().catch((error) => {
+        detectorState.loader = null;
+        throw error;
+      });
     }
     return detectorState.loader;
+  }
+
+  function releaseDetector() {
+    if (detectorState.detector && typeof detectorState.detector.dispose === 'function') {
+      detectorState.detector.dispose();
+    }
+    detectorState.detector = null;
+    detectorState.loader = null;
   }
 
   function wait(ms) {
@@ -467,6 +480,7 @@
       },
 
       loadStoredCards() {
+        localStorage.removeItem(LEGACY_CARD_STORAGE_KEY);
         const raw = localStorage.getItem(CARD_STORAGE_KEY);
         if (!raw) return;
         try {
@@ -533,6 +547,7 @@
       exitToMenu() {
         this.stopDetectionLoop();
         this.stopCamera();
+        releaseDetector();
         this.app.vue.isShareCameraMode = false;
         this.app.vue.currentFrame = null;
         this.app.vue.drawer = true;
@@ -547,6 +562,7 @@
       window.removeEventListener('resize', this.syncCanvasSize);
       this.stopDetectionLoop();
       this.stopCamera();
+      releaseDetector();
       this.app.vue.isShareCameraMode = false;
     }
   });

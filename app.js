@@ -5,6 +5,75 @@ document.onreadystatechange = async () => { if(document.readyState !==
 
   let vue, map; let layerName = 'immo'; let popup; let poiPopup;
   const moduleCacheBuster = `v=${Math.random().toString(36).slice(2)}`;
+  const MAP_STATE_STORAGE_KEY = 'produktorUiMapStateV2';
+  const LEGACY_MAP_STATE_STORAGE_KEY = 'immoMapState';
+  const THREE_JS_URL = 'https://unpkg.com/three@0.106.2/build/three.min.js';
+  const GLTF_LOADER_URL = 'https://unpkg.com/three@0.106.2/examples/js/loaders/GLTFLoader.js';
+  const NON_PERSISTED_STATE_KEYS = new Set(['esriSatellite', 'model3d']);
+  const scriptLoadInflight = new Map();
+  const scriptLoadDone = new Set();
+  let threeReadyPromise = null;
+  let current3dModelLayer = null;
+
+  function loadScriptOnce(src) {
+    if (scriptLoadDone.has(src)) return Promise.resolve();
+    if (scriptLoadInflight.has(src)) return scriptLoadInflight.get(src);
+    if (document.querySelector(`script[src="${src}"]`)) {
+      scriptLoadDone.add(src);
+      return Promise.resolve();
+    }
+    const loadPromise = new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = src;
+      script.async = true;
+      script.onload = () => {
+        scriptLoadDone.add(src);
+        scriptLoadInflight.delete(src);
+        resolve();
+      };
+      script.onerror = () => {
+        scriptLoadInflight.delete(src);
+        reject(new Error(`Failed loading ${src}`));
+      };
+      document.head.appendChild(script);
+    });
+    scriptLoadInflight.set(src, loadPromise);
+    return loadPromise;
+  }
+
+  async function ensureThreeReady() {
+    if (window.THREE && window.THREE.GLTFLoader) return window.THREE;
+    if (!threeReadyPromise) {
+      threeReadyPromise = (async () => {
+        await loadScriptOnce(THREE_JS_URL);
+        await loadScriptOnce(GLTF_LOADER_URL);
+        if (!window.THREE || !window.THREE.GLTFLoader) {
+          throw new Error('Three.js or GLTFLoader is unavailable');
+        }
+        return window.THREE;
+      })();
+    }
+    return threeReadyPromise;
+  }
+
+  function sanitizePersistedState(value) {
+    const next = { ...(value || {}) };
+    NON_PERSISTED_STATE_KEYS.forEach(key => delete next[key]);
+    return next;
+  }
+
+  function readStoredMapState() {
+    try {
+      const raw = localStorage.getItem(MAP_STATE_STORAGE_KEY);
+      return raw ? JSON.parse(raw) : { theme: 'light' };
+    } catch (_) {
+      return { theme: 'light' };
+    }
+  }
+
+  function writeStoredMapState(value) {
+    localStorage.setItem(MAP_STATE_STORAGE_KEY, JSON.stringify(sanitizePersistedState(value)));
+  }
 
   // Import components (await
   // import('./components/button-counter.js')).default(); Vue.config.silent =
@@ -14,7 +83,7 @@ document.onreadystatechange = async () => { if(document.readyState !==
 
     { icon:       'mdi-chevron-up', 'icon-alt': 'mdi-chevron-down', text:
       'Goods',
-      model:      true,
+      model:      false,
       children:   [
         {
           icon: 'mdi-arrow-down-bold-box',
@@ -52,7 +121,8 @@ document.onreadystatechange = async () => { if(document.readyState !==
   const app = window.app = {
     geo:  await import(`./components/geo.js?${moduleCacheBuster}`),
     net:  await import(`./components/net.js?${moduleCacheBuster}`),
-    html: await import(`./components/html.js?${moduleCacheBuster}`)
+    html: await import(`./components/html.js?${moduleCacheBuster}`),
+    loadScriptOnce
   };
 
   // Preload components
@@ -216,15 +286,23 @@ document.onreadystatechange = async () => { if(document.readyState !==
     }),
 
     created() {
-      this.state = localStorage.immoMapState ? JSON.parse(localStorage.immoMapState) : {theme: 'light'};
-      this.state.isAnimated = this.state.isAnimated ?? true;
-      this.state.esriSatellite = this.state.esriSatellite ?? true;
-      this.state.jaxaTerrainRgb = this.state.jaxaTerrainRgb ?? false;
-      this.state.hillshades = this.state.hillshades ?? true;
-      this.state.osmVector = this.state.osmVector ?? true;
-      this.state.globe = this.state.globe ?? false;
-      this.state.buildings3d = this.state.buildings3d ?? true;
-      this.state.model3d = this.state.model3d ?? false;
+      localStorage.removeItem(LEGACY_MAP_STATE_STORAGE_KEY);
+      const storedState = readStoredMapState();
+      this.state = {
+        theme: 'light',
+        isAnimated: true,
+        esriSatellite: false,
+        jaxaTerrainRgb: false,
+        hillshades: true,
+        osmVector: true,
+        globe: false,
+        buildings3d: true,
+        model3d: false,
+        ...storedState,
+        // Runtime-only switches are intentionally forced off on boot.
+        esriSatellite: false,
+        model3d: false
+      };
     },
 
     methods: {
@@ -359,8 +437,13 @@ document.onreadystatechange = async () => { if(document.readyState !==
       },
 
       closeOtherMenuSections(except) {
-        if (except !== 'settings') this.settingsOpen = false;
-        if (except !== 'project') this.projectOpen = false;
+        const groups = [
+          ['settings', 'settingsOpen'],
+          ['project', 'projectOpen']
+        ];
+        groups.forEach(([name, key]) => {
+          if (except !== name) this[key] = false;
+        });
         this.items.forEach(i => {
           if (i !== except) i.model = false;
         });
@@ -416,12 +499,9 @@ document.onreadystatechange = async () => { if(document.readyState !==
       },
 
       saveState(key, value) {
-        if(!localStorage.immoMapState) {
-          localStorage.immoMapState = "{}";
-        }
-        const val = JSON.parse(localStorage.immoMapState);
+        const val = readStoredMapState();
         val[key] = value;
-        localStorage.immoMapState = JSON.stringify(val);
+        writeStoredMapState(val);
       }
     },
 
@@ -466,10 +546,18 @@ document.onreadystatechange = async () => { if(document.readyState !==
             (val && app.vue.state.osmVector) ? 'visible' : 'none');
         }
       },
-      'state.model3d'(val) {
+      async 'state.model3d'(val) {
         if (!app.map || !app.map.isStyleLoaded()) return;
         if (val && !app.map.getLayer('3d-model')) {
-          app.map.addLayer(create3dModelLayer());
+          try {
+            await ensureThreeReady();
+          } catch (error) {
+            console.error('Failed to load Three.js dependencies', error);
+            this.state.model3d = false;
+            return;
+          }
+          current3dModelLayer = create3dModelLayer();
+          app.map.addLayer(current3dModelLayer);
           app.map.flyTo({
             center: MODEL_ORIGIN,
             zoom: 18,
@@ -478,7 +566,7 @@ document.onreadystatechange = async () => { if(document.readyState !==
             essential: true
           });
         } else if (!val && app.map.getLayer('3d-model')) {
-          app.map.removeLayer('3d-model');
+          remove3dModelLayer();
         }
       },
       'state.globe'(val) {
@@ -517,7 +605,7 @@ document.onreadystatechange = async () => { if(document.readyState !==
 
           window.setTimeout(() => window.dispatchEvent(new Event('resize')));
 
-          return localStorage.immoMapState = JSON.stringify(val);
+          writeStoredMapState(val);
         }
       },
 
@@ -541,9 +629,6 @@ document.onreadystatechange = async () => { if(document.readyState !==
 
     }
   });
-
-  let currentItemMenu = vue.items[0];
-  currentItemMenu.model = true;
 
   // No frame selected by default
   vue.currentFrame = null;
@@ -586,7 +671,34 @@ document.onreadystatechange = async () => { if(document.readyState !==
   const MODEL_ALTITUDE = 0;
   const MODEL_ROTATE = [Math.PI / 2, 0, 0];
 
+  function disposeSceneNode(node) {
+    if (!node) return;
+    if (node.geometry && typeof node.geometry.dispose === 'function') {
+      node.geometry.dispose();
+    }
+    const material = node.material;
+    if (Array.isArray(material)) {
+      material.forEach(m => m && typeof m.dispose === 'function' && m.dispose());
+    } else if (material && typeof material.dispose === 'function') {
+      material.dispose();
+    }
+  }
+
+  function remove3dModelLayer() {
+    if (map && map.getLayer('3d-model')) {
+      map.removeLayer('3d-model');
+    }
+    if (current3dModelLayer && typeof current3dModelLayer.dispose === 'function') {
+      current3dModelLayer.dispose();
+    }
+    current3dModelLayer = null;
+  }
+
   function create3dModelLayer() {
+    const ThreeLib = window.THREE;
+    if (!ThreeLib || !ThreeLib.GLTFLoader) {
+      throw new Error('Three.js dependencies are not loaded');
+    }
     const initialTerrainElevation = typeof map.queryTerrainElevation === 'function'
       ? (map.queryTerrainElevation(MODEL_ORIGIN) || 0)
       : 0;
@@ -609,21 +721,22 @@ document.onreadystatechange = async () => { if(document.readyState !==
       type:          'custom',
       renderingMode: '3d',
       onAdd(map, gl) {
-        this.camera = new THREE.Camera();
-        this.scene = new THREE.Scene();
-        const d1 = new THREE.DirectionalLight(0xffffff);
+        this.camera = new ThreeLib.Camera();
+        this.scene = new ThreeLib.Scene();
+        const d1 = new ThreeLib.DirectionalLight(0xffffff);
         d1.position.set(0, -70, 100).normalize();
         this.scene.add(d1);
-        const d2 = new THREE.DirectionalLight(0xffffff);
+        const d2 = new ThreeLib.DirectionalLight(0xffffff);
         d2.position.set(0, 70, 100).normalize();
         this.scene.add(d2);
 
-        const loader = new THREE.GLTFLoader();
+        const loader = new ThreeLib.GLTFLoader();
         loader.load(
           'assets/gltf/scene.gltf',
-          (gltf) => { 
+          (gltf) => {
             const model = gltf.scene.clone();
             model.position.set(0, 0, 0);
+            this.model = model;
             this.scene.add(model);
           },
           undefined,
@@ -633,7 +746,7 @@ document.onreadystatechange = async () => { if(document.readyState !==
         );
 
         this.map = map;
-        this.renderer = new THREE.WebGLRenderer({
+        this.renderer = new ThreeLib.WebGLRenderer({
           canvas:  map.getCanvas(),
           context: gl,
           antialias: true
@@ -666,13 +779,13 @@ document.onreadystatechange = async () => { if(document.readyState !==
         if (!projectionMatrix || typeof projectionMatrix.length !== 'number') {
           return;
         }
-        const m = new THREE.Matrix4().fromArray(projectionMatrix);
-        const l = new THREE.Matrix4()
+        const m = new ThreeLib.Matrix4().fromArray(projectionMatrix);
+        const l = new ThreeLib.Matrix4()
           .makeTranslation(mt.translateX, mt.translateY, mt.translateZ)
-          .scale(new THREE.Vector3(mt.scale, -mt.scale, mt.scale))
-          .multiply(new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(1, 0, 0), mt.rotateX))
-          .multiply(new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0, 1, 0), mt.rotateY))
-          .multiply(new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0, 0, 1), mt.rotateZ));
+          .scale(new ThreeLib.Vector3(mt.scale, -mt.scale, mt.scale))
+          .multiply(new ThreeLib.Matrix4().makeRotationAxis(new ThreeLib.Vector3(1, 0, 0), mt.rotateX))
+          .multiply(new ThreeLib.Matrix4().makeRotationAxis(new ThreeLib.Vector3(0, 1, 0), mt.rotateY))
+          .multiply(new ThreeLib.Matrix4().makeRotationAxis(new ThreeLib.Vector3(0, 0, 1), mt.rotateZ));
         this.camera.projectionMatrix = m.multiply(l);
         if (typeof this.renderer.resetState === 'function') {
           this.renderer.resetState();
@@ -681,6 +794,19 @@ document.onreadystatechange = async () => { if(document.readyState !==
         }
         this.renderer.render(this.scene, this.camera);
         this.map.triggerRepaint();
+      },
+      dispose() {
+        if (this.scene && typeof this.scene.traverse === 'function') {
+          this.scene.traverse(disposeSceneNode);
+        }
+        if (this.renderer && typeof this.renderer.dispose === 'function') {
+          this.renderer.dispose();
+        }
+        this.model = null;
+        this.scene = null;
+        this.camera = null;
+        this.renderer = null;
+        this.map = null;
       }
     };
   }
@@ -821,6 +947,7 @@ document.onreadystatechange = async () => { if(document.readyState !==
   window.addEventListener('keyup', onNavKeyUp);
 
   map.on('remove', () => {
+    remove3dModelLayer();
     cancelAnimationFrame(navFrame);
     window.removeEventListener('keydown', onNavKeyDown);
     window.removeEventListener('keyup', onNavKeyUp);
@@ -1050,8 +1177,17 @@ document.onreadystatechange = async () => { if(document.readyState !==
     });
 
     if (app.vue.state.model3d && !map.getLayer('3d-model')) {
-      map.addLayer(create3dModelLayer());
-      map.flyTo({ center: MODEL_ORIGIN, zoom: 18, pitch: 60, bearing: 0, essential: true });
+      ensureThreeReady()
+        .then(() => {
+          if (!app.vue.state.model3d || map.getLayer('3d-model')) return;
+          current3dModelLayer = create3dModelLayer();
+          map.addLayer(current3dModelLayer);
+          map.flyTo({ center: MODEL_ORIGIN, zoom: 18, pitch: 60, bearing: 0, essential: true });
+        })
+        .catch((error) => {
+          console.error('Failed to initialize 3D model layer', error);
+          app.vue.state.model3d = false;
+        });
     }
 
     map.addControl(new maplibregl.NavigationControl(), 'bottom-right');
