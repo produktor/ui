@@ -28,23 +28,41 @@
                     and sustainable sharing.
                   </p>
 
-                  <h3 class="mb-3 mt-4">Author</h3>
+                  <h3 class="mb-3 mt-4">Project Team</h3>
                   <p class="body-2 mb-3">
-                    Senior GIS Fullstack/DevOps Engineer. Tenerife-based. 10+ years experience as Senior Software Engineer and Solution Architect. Builds reliable, scalable, high-performance on-premise systems for terabyte-scale geospatial data. Specializes in self-hosted OSM/OSS stacks, ETL pipelines, high-availability backends with sub-10ms response times, PostGIS/PostgreSQL, and fullstack delivery avoiding big-tech lock-in.
+                    We are a engineer and designer team  with over 15 years of hands-on experience delivering
+                    reliable technical solutions across software and hardware domains.
                   </p>
-                  <p class="body-2 mb-2"><strong>Core deliverables:</strong></p>
-                  <ul class="body-2 pl-4 mb-3" style="list-style-type: disc;">
-                    <li class="mb-2">On-premise backend: serves vector/raster tiles and GeoJSON from OSM/OSS sources on UX request. Full tile caching. HA configuration.</li>
-                    <li class="mb-2">Interactive map frontend (latest base product): <a href="https://github.com/produktor/ui" target="_blank" rel="noopener">produktor/ui</a>. Integrates hillshades, 3D houses, OSM data via MBTiles and vectors. Keyboard + mouse navigation in 3D space. Multiple layer/display options. 3D demo and standard demo included. JS/CSS/HTML stack (71.8% JS).</li>
-                    <li class="mb-2">Mapbender surface digitizer implementation and contributions to Mapbender configurator and vis-ui.js.</li>
-                    <li class="mb-2"><a href="https://github.com/eSlider/geo-tools" target="_blank" rel="noopener">geo-tools</a>: Go-based. Extracts PBF/JPEG/WebP/PNG tiles from MBTiles. Extracts GeoJSON features via geocoder. Concurrent processing for large datasets (world-vector.mbtiles, Canary Islands examples).</li>
-                    <li class="mb-2"><a href="https://github.com/eSlider/spatialite" target="_blank" rel="noopener">spatialite</a>: Static Linux binaries + PHP wrapper driver. Lightweight file-based spatial DBMS equivalent to PostgreSQL + PostGIS. Composer-installable.</li>
-                  </ul>
+
                   <p class="body-2 mb-3">
-                    <a href="https://github.com/eSlider/" target="_blank" rel="noopener">GitHub</a>. Pinned activity in data engineering, self-hosted infrastructure, Go backend services. Skills matrix: Go, JavaScript, PostGIS, MBTiles, vector tiles, ETL, Docker, on-premise HA, spatialite/SQLite alternatives.
+                    Our background includes project engineering in manufacturing, full-stack development
+                    (front-end and back-end), data scraping and analysis, embedded systems for drone
+                    navigation, AI-based object recognition, and business process automation using modern
+                    AI tools.
+                  </p>
+
+                  <p class="body-2 mb-3">
+                    Our team includes a seniors in GIS Fullstack/DevOps Engineering based in Tenerife, with
+                    overaal 15+ years of experience as a senior software engineer and solution architect.
+                    We design and operate reliable, scalable, high-performance local systems for
+                    terabyte-scale geospatial data, with specialization in self-hosted OSM/OSS stacks,
+                    ETL pipelines, and low-latency backends, including sub-10 ms scenarios.
+                  </p>
+
+                  <p class="body-2 mb-3">
+                    Our GIS and platform engineering delivery covers spatial databases and end-to-end
+                    implementation across data, backend, frontend, and operations - including PostGIS/
+                    PostgreSQL, SpatiaLite, Oracle Spatial, MBTiles, and vector tile workflows - helping
+                    organizations avoid big-tech lock-in while retaining on-premise operational control.
+                  </p>
+
+                  <p class="body-2 mb-3">
+                    We focus on practical results: clear architecture, clean implementation, and systems
+                    that work reliably in real conditions. We are comfortable taking ownership of complex
+                    tasks - from idea to deployment - and delivering solutions that clients can depend on.
                   </p>
                   <v-divider class="my-3"></v-divider>
-                  <p class="body-2 mb-4">Don't hesitate to contact me via:
+                  <p class="body-2 mb-4">Don't hesitate to contact us via:
                    <a href="https://t.me/eSIider" target="_blank" rel="noopener" class="body-2">Telegram</a>
                   or email: <a href="mailto:esider@gmail.com" target="_blank" rel="noopener" class="body-2">esider@gmail.com</a>
                   </p>
