@@ -39,7 +39,10 @@
 		<div
 			v-if="!isShareCameraMode"
 			class="map-top-search"
-			:style="{ left: drawer ? '266px' : '10px' }"
+			:style="{
+				left: drawer ? '266px' : '10px',
+				'--map-search-width': drawer ? 'calc(100vw - 436px)' : 'calc(100vw - 180px)'
+			}"
 		>
 			<v-btn
 				id="menu-toggle-btn"

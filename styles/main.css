@@ -28,8 +28,8 @@ body, html {
 }
 
 .map-top-search-input {
-  width: calc(100vw - 180px);
-  max-width: calc(100vw - 180px);
+  width: var(--map-search-width, calc(100vw - 180px));
+  max-width: var(--map-search-width, calc(100vw - 180px));
   margin-left: 100px;
   pointer-events: auto;
 }
