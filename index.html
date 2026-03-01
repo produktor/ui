@@ -41,6 +41,16 @@
 			class="map-top-search"
 			:style="{ left: drawer ? '266px' : '10px' }"
 		>
+			<v-btn
+				id="menu-toggle-btn"
+				class="menu-toggle-btn"
+				icon
+				@click.stop="drawer = !drawer"
+				aria-label="Open menu"
+			>
+				<v-icon>mdi-menu</v-icon>
+			</v-btn>
+
 			<v-autocomplete
 				v-model="mapSearchResult"
 				class="map-top-search-input"
@@ -70,16 +80,6 @@
 					</template>
 				</template>
 			</v-autocomplete>
-
-			<v-btn
-				id="menu-toggle-btn"
-				class="menu-toggle-btn"
-				icon
-				@click.stop="drawer = !drawer"
-				aria-label="Open menu"
-			>
-				<v-icon>mdi-menu</v-icon>
-			</v-btn>
 		</div>
 		<v-navigation-drawer v-model="drawer" app height="100%" width="256">
 			<v-list flat>

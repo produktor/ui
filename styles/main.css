@@ -28,7 +28,10 @@ body, html {
 }
 
 .map-top-search-input {
-  width: min(360px, calc(100vw - 88px));
+  width: calc(100vw - 180px);
+  max-width: calc(100vw - 180px);
+  margin-left: 100px;
+  pointer-events: auto;
 }
 
 #app .map-top-search-input .v-input__slot {
