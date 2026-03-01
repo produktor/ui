@@ -41,7 +41,10 @@
 			class="map-top-search"
 			:style="{
 				left: drawer ? '266px' : '10px',
-				'--map-search-width': drawer ? 'calc(100vw - 436px)' : 'calc(100vw - 180px)'
+				'--right-panel-reserve': currentFeature ? '360px' : '0px',
+				'--map-search-width': drawer
+					? 'calc(100vw - 436px - var(--right-panel-reserve))'
+					: 'calc(100vw - 180px - var(--right-panel-reserve))'
 			}"
 		>
 			<v-btn
@@ -384,7 +387,11 @@
 					<v-simple-table class="key-value">
 						<template v-slot:default>
 							<tbody>0
-							<tr v-for="(item, index) in  currentFeature.properties">
+							<tr
+								v-for="(item, index) in  currentFeature.properties"
+								class="property-entry-clickable"
+								@click="fillSearchInputFromProperty(index, item)"
+							>
 								<td class="key-cell">{{ index }}:</td>
 								<td class="key-value">{{ item }}</td>
 							</tr>

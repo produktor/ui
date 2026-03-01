@@ -541,6 +541,39 @@ document.onreadystatechange = async () => { if(document.readyState !==
             }
           }
         }, 250);
+      },
+
+      fillSearchInputFromProperty(key, value) {
+        const raw = typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean'
+          ? String(value)
+          : '';
+        const query = raw.trim();
+        if(query.length < 2) return;
+
+        this.fillInputAndSelectLocation(query);
+      },
+
+      async fillInputAndSelectLocation(query) {
+        const normalizedQuery = (query || '').trim();
+        if(normalizedQuery.length < 2) return;
+
+        this.mapSearchInput = normalizedQuery;
+        this.mapSearchResult = null;
+        this.isMapSearchLoading = true;
+
+        try {
+          const response = await app.photonApiClient.search(normalizedQuery, { limit: 8 });
+          let results = response && response.features ? response.features : [];
+          results.forEach(app.geo.utils.describeFeature);
+          this.mapSearchResults = results;
+          if(results.length > 0) {
+            this.mapSearchResult = results[0];
+          }
+        } catch (_) {
+          this.mapSearchResults = [];
+        } finally {
+          this.isMapSearchLoading = false;
+        }
       }
     },
 
