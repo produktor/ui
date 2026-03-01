@@ -122,6 +122,7 @@ document.onreadystatechange = async () => { if(document.readyState !==
     geo:  await import(`./components/geo.js?${moduleCacheBuster}`),
     net:  await import(`./components/net.js?${moduleCacheBuster}`),
     html: await import(`./components/html.js?${moduleCacheBuster}`),
+    photonApiClient: new (await import(`./components/photon-api-client.js?${moduleCacheBuster}`)).PhotonApiClient(),
     loadScriptOnce
   };
 
@@ -265,6 +266,12 @@ document.onreadystatechange = async () => { if(document.readyState !==
 
       // Displaying navigation?
       drawer: null,
+
+      mapSearchInput: '',
+      mapSearchResult: null,
+      mapSearchResults: [],
+      isMapSearchLoading: false,
+      mapSearchRequestId: 0,
 
       // Settings group expanded state
       settingsOpen: false,
@@ -502,6 +509,38 @@ document.onreadystatechange = async () => { if(document.readyState !==
         const val = readStoredMapState();
         val[key] = value;
         writeStoredMapState(val);
+      },
+
+      runMapSearchAutocomplete(value) {
+        const query = (value || '').trim();
+        this._mapSearchTimer && window.clearTimeout(this._mapSearchTimer);
+
+        if(query.length < 2) {
+          this.isMapSearchLoading = false;
+          this.mapSearchResults = [];
+          return;
+        }
+
+        const requestId = this.mapSearchRequestId + 1;
+        this.mapSearchRequestId = requestId;
+        this.isMapSearchLoading = true;
+
+        this._mapSearchTimer = window.setTimeout(async () => {
+          try {
+            const response = await app.photonApiClient.search(query, { limit: 8 });
+            let results = response && response.features ? response.features : [];
+            results.forEach(app.geo.utils.describeFeature);
+            if(this.mapSearchRequestId !== requestId) return;
+            this.mapSearchResults = results;
+          } catch (_) {
+            if(this.mapSearchRequestId !== requestId) return;
+            this.mapSearchResults = [];
+          } finally {
+            if(this.mapSearchRequestId === requestId) {
+              this.isMapSearchLoading = false;
+            }
+          }
+        }, 250);
       }
     },
 
@@ -621,6 +660,14 @@ document.onreadystatechange = async () => { if(document.readyState !==
           this.setMapInteractionEnabled(true);
         }
         window.setTimeout(() => window.dispatchEvent(new Event('resize')));
+      },
+      mapSearchInput(value, oldValue) {
+        if(value === oldValue) return;
+        this.runMapSearchAutocomplete(value);
+      },
+      mapSearchResult(feature) {
+        if(!feature || !feature.geometry) return;
+        app.map.showFeature(feature);
       },
       //
       // currentFeature(val, oldValue) {
@@ -981,18 +1028,31 @@ document.onreadystatechange = async () => { if(document.readyState !==
 
     map.getSource('nominatim-regions').setData(featureCollection);
 
+    const isPointGeometry = feature.geometry && feature.geometry.type === 'Point';
     let bounds = app.geo.utils.getBoundsByCoordinates(feature.geometry);
     try {
       let bearing = vue.state.isAnimated ? Math.random() * 50 : 0;
-
-      map.fitBounds(bounds, {
-        padding: 20,
-        animate: vue.state.isAnimated,
-        speed:   3, // make the flying slow
-        bearing: bearing,
-        maxZoom: 17.2,
-        easing:  t => t,
-      });
+      if(isPointGeometry) {
+        let {lon, lat} = app.geo.utils.getFeatureCenter(feature);
+        map.flyTo({
+          center: [lon, lat],
+          zoom: Math.max(map.getZoom(), 16),
+          animate: vue.state.isAnimated,
+          speed: 1.2,
+          curve: 1.2,
+          bearing: bearing,
+          essential: true
+        });
+      } else {
+        map.fitBounds(bounds, {
+          padding: 20,
+          animate: vue.state.isAnimated,
+          speed:   3, // make the flying slow
+          bearing: bearing,
+          maxZoom: 17.2,
+          easing:  t => t,
+        });
+      }
     } catch (e) {
       debugger
     }

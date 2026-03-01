@@ -36,9 +36,51 @@
 
 <div id="app" style="display: none">
 		<v-app id="inspire">
-		<v-btn v-if="!isShareCameraMode" id="menu-toggle-btn" class="menu-toggle-btn" icon @click.stop="drawer = !drawer" :style="{ left: drawer ? '266px' : '10px' }" aria-label="Open menu">
-			<v-icon>mdi-menu</v-icon>
-		</v-btn>
+		<div
+			v-if="!isShareCameraMode"
+			class="map-top-search"
+			:style="{ left: drawer ? '266px' : '10px' }"
+		>
+			<v-autocomplete
+				v-model="mapSearchResult"
+				class="map-top-search-input"
+				:loading="isMapSearchLoading"
+				:items="mapSearchResults"
+				:search-input.sync="mapSearchInput"
+				label="Поиск локации"
+				prepend-inner-icon="mdi-magnify"
+				hide-no-data
+				hide-details
+				solo
+				flat
+				no-filter
+				return-object
+				item-text="title"
+				item-value="id"
+				:menu-props="{ offsetY: true, closeOnContentClick: true }"
+			>
+				<template v-slot:selection="data">
+					<template v-if="data && data.item">
+						{{ data.item.title || data.item.properties.name }}
+					</template>
+				</template>
+				<template slot="item" slot-scope="data">
+					<template v-if="data && data.item">
+						{{ data.item.title || data.item.properties.name }}
+					</template>
+				</template>
+			</v-autocomplete>
+
+			<v-btn
+				id="menu-toggle-btn"
+				class="menu-toggle-btn"
+				icon
+				@click.stop="drawer = !drawer"
+				aria-label="Open menu"
+			>
+				<v-icon>mdi-menu</v-icon>
+			</v-btn>
+		</div>
 		<v-navigation-drawer v-model="drawer" app height="100%" width="256">
 			<v-list flat>
 				<v-list-item class="produktor-header">

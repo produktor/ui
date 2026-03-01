@@ -1,6 +1,9 @@
+import { PhotonApiClient } from '../photon-api-client.js';
+
 (() => {
 
   let me;
+  const photonApiClient = new PhotonApiClient();
 
   Vue.component('product-search', {
     mounted() {
@@ -63,7 +66,7 @@
                     </template>
                     <template slot="item" slot-scope="data">
                       <template v-if="data && data.item">
-                        {{ data.item.properties.display_name }}
+                        {{ data.item.title || data.item.properties.name }}
                       </template>
                     </template>
                   </v-autocomplete>
@@ -99,20 +102,17 @@
         if(value && value.length < 1) return;
 
         me.isSearching = true;
-        let url = " https://nominatim.openstreetmap.org/search.php" +
-                  "?country=es" +
-                  "&state=Santa+Cruz+de+Tenerife" +
-                  "&format=geojson" +
-                  "&city=" + encodeURIComponent(value);
 
-        app.net.request(url, fetcher => fetcher
+        photonApiClient.search(value, { limit: me.limit })
           .then(response => {
             let results = response && response.features ? response.features : [];
             results.forEach(app.geo.utils.describeFeature);
-            return me.results = results;
+            me.results = results;
           })
-          .finally(() => me.isSearching = false)
-        );
+          .catch(() => {
+            me.results = [];
+          })
+          .finally(() => me.isSearching = false);
       },
     },
 
