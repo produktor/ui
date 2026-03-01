@@ -4,7 +4,7 @@ export class PhotonApiClient {
    * @param {string} [config.baseUrl]
    */
   constructor(config = {}) {
-    this.baseUrl = config.baseUrl || 'https://photon.produktor.duckdns.org/api';
+    this.baseUrl = config.baseUrl || 'https://photon.produktor.mywire.org/api';
   }
 
   /**

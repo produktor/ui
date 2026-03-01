@@ -38,6 +38,7 @@
 		<v-app id="inspire">
 		<div
 			v-if="!isShareCameraMode"
+			ref="mapTopSearch"
 			class="map-top-search"
 			:style="{
 				left: drawer ? '266px' : '10px',
@@ -57,7 +58,19 @@
 				<v-icon>mdi-menu</v-icon>
 			</v-btn>
 
+			<v-btn
+				v-if="!isMapSearchOpen"
+				class="menu-toggle-btn map-search-toggle-btn"
+				icon
+				@click.stop="openMapSearch"
+				aria-label="Open map search"
+			>
+				<v-icon>mdi-magnify</v-icon>
+			</v-btn>
+
 			<v-autocomplete
+				v-else
+				ref="mapSearchAutocomplete"
 				v-model="mapSearchResult"
 				class="map-top-search-input"
 				:loading="isMapSearchLoading"
@@ -74,6 +87,8 @@
 				item-text="title"
 				item-value="id"
 				:menu-props="{ offsetY: true, closeOnContentClick: true }"
+				@blur.native="onMapSearchBlur"
+				@keydown.esc.native="closeMapSearch"
 			>
 				<template v-slot:selection="data">
 					<template v-if="data && data.item">

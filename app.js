@@ -272,6 +272,7 @@ document.onreadystatechange = async () => { if(document.readyState !==
       mapSearchResults: [],
       isMapSearchLoading: false,
       mapSearchRequestId: 0,
+      isMapSearchOpen: false,
 
       // Settings group expanded state
       settingsOpen: false,
@@ -541,6 +542,38 @@ document.onreadystatechange = async () => { if(document.readyState !==
             }
           }
         }, 250);
+      },
+
+      openMapSearch() {
+        if(this.isMapSearchOpen) return;
+        this.isMapSearchOpen = true;
+        this.$nextTick(() => {
+          const autocomplete = this.$refs.mapSearchAutocomplete;
+          if(autocomplete && typeof autocomplete.focus === 'function') {
+            autocomplete.focus();
+          }
+          const input = autocomplete && autocomplete.$el
+            ? autocomplete.$el.querySelector('input')
+            : null;
+          if(input && typeof input.focus === 'function') {
+            input.focus();
+          }
+        });
+      },
+
+      closeMapSearch() {
+        this.isMapSearchOpen = false;
+        this.isMapSearchLoading = false;
+        this.mapSearchResults = [];
+      },
+
+      onMapSearchBlur() {
+        window.setTimeout(() => {
+          const searchRoot = this.$refs.mapTopSearch;
+          const activeElement = document.activeElement;
+          if(searchRoot && activeElement && searchRoot.contains(activeElement)) return;
+          this.closeMapSearch();
+        }, 120);
       },
 
       fillSearchInputFromProperty(key, value) {
@@ -1171,7 +1204,12 @@ document.onreadystatechange = async () => { if(document.readyState !==
       type:   "symbol",
       source: 'nominatim-regions',
       layout: {
-        "text-field": "{displayname}{name}",
+        "text-field": [
+          "case",
+          ["has", "name"],
+          ["concat", ["get", "name"], "\n", ["coalesce", ["get", "displayname"], ""]],
+          ["coalesce", ["get", "displayname"], ""]
+        ],
         "text-font":  ["Roboto Bold"],
         "text-size":  20,
         "icon-size":      1,

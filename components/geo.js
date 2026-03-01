@@ -85,6 +85,14 @@ export const utils = {
     let title = "";
     let titleChunks = [];
     let postCodesFormatted;
+    const pushTitleChunk = (value) => {
+      if(value == null) return;
+      const chunk = String(value).trim();
+      if(!chunk) return;
+      if(!titleChunks.some(existing => String(existing).toLowerCase() === chunk.toLowerCase())) {
+        titleChunks.push(chunk);
+      }
+    };
 
     /**
      *
@@ -102,20 +110,25 @@ export const utils = {
      "state": "Hamburg"
      */
 
+    // Keep the original place name visible in autocomplete/search labels.
+    if(properties.name) {
+      pushTitleChunk(properties.name);
+    }
+
     if(properties.street) {
       if(properties.housenumber) {
-        titleChunks.push(properties.street + ' ' + properties.housenumber);
+        pushTitleChunk(properties.street + ' ' + properties.housenumber);
       } else {
-        titleChunks.push(properties.street);
+        pushTitleChunk(properties.street);
       }
     }
 
     if(properties.suburb) {
-      titleChunks.push(properties.suburb);
+      pushTitleChunk(properties.suburb);
     }
 
     if(properties.citydistrict) {
-      titleChunks.push(properties.citydistrict);
+      pushTitleChunk(properties.citydistrict);
     }
 
     if(properties.postcode) {
@@ -129,10 +142,10 @@ export const utils = {
 
     if(properties.city) {
       if(postCodesFormatted) {
-        titleChunks.push(postCodesFormatted + " " + properties.city);
+        pushTitleChunk(postCodesFormatted + " " + properties.city);
         postCodesFormatted = null;
       } else {
-        titleChunks.push(properties.city);
+        pushTitleChunk(properties.city);
       }
     }
 
@@ -147,29 +160,29 @@ export const utils = {
 
     if(properties.county) {
       if(postCodesFormatted) {
-        titleChunks.push(postCodesFormatted + " " + properties.county);
+        pushTitleChunk(postCodesFormatted + " " + properties.county);
         postCodesFormatted = null;
       } else {
-        titleChunks.push(properties.county);
+        pushTitleChunk(properties.county);
       }
     }
 
 
     if(properties.statedistrict) {
       if(postCodesFormatted) {
-        titleChunks.push(postCodesFormatted + " " + properties.statedistrict);
+        pushTitleChunk(postCodesFormatted + " " + properties.statedistrict);
         postCodesFormatted = null;
       } else {
-        titleChunks.push(properties.statedistrict);
+        pushTitleChunk(properties.statedistrict);
       }
     }
 
     if(postCodesFormatted) {
-      titleChunks.push(postCodesFormatted);
+      pushTitleChunk(postCodesFormatted);
     }
 
     if(properties.state) {
-      titleChunks.push(properties.state);
+      pushTitleChunk(properties.state);
     }
 
 

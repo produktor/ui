@@ -8,7 +8,7 @@
   "sources": {
     "satellite-jaxa": {
       "type": "raster",
-      "url": "https://lx.dns.produktor.io/services/jaxa_terrainrgb0-12",
+      "url": "https://tiles.produktor.mywire.org/services/jaxa_terrainrgb0-12",
       "tileSize": 512
     },
     "satellite-esri": {
@@ -21,16 +21,16 @@
     },
     "openmaptiles": {
       "type": "vector",
-      "url": "https://lx.dns.produktor.io/services/planet-231204.osm.renumbered"
+      "url": "https://tiles.produktor.mywire.org/services/planet-231204.osm.renumbered"
     },
     "hillshading": {
       "type": "raster",
-      "url": "https://lx.dns.produktor.io/services/jaxa_hillshade",
+      "url": "https://tiles.produktor.mywire.org/services/jaxa_hillshade",
       "tileSize": 256
     },
     "terrain-dem": {
       "type": "raster-dem",
-      "url": "https://lx.dns.produktor.io/services/jaxa_terrainrgb0-12",
+      "url": "https://tiles.produktor.mywire.org/services/jaxa_terrainrgb0-12",
       "tileSize": 512,
       "encoding": "mapbox"
     }
