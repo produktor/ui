@@ -21,7 +21,7 @@
     },
     "openmaptiles": {
       "type": "vector",
-      "url": "https://tiles.produktor.mywire.org/services/planet-231204.osm.renumbered"
+      "url": "https://tiles.produktor.mywire.org/services/planet-260216.osm.renumbered"
     },
     "hillshading": {
       "type": "raster",
