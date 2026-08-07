@@ -3,29 +3,29 @@
 document.onreadystatechange = async () => {
   if(document.readyState !== "complete") {
     return;
-  }
+        }
 
-  let vue, map;
-  let layerName = 'immo';
-  let popup;
+        let vue, map;
+      let layerName = 'immo';
+      let popup;
 
-  // Import components
-  // (await import('./components/button-counter.js')).default();
-  Vue.config.silent = false;
+      // Import components
+      // (await import('./components/button-counter.js')).default();
+      Vue.config.silent = false;
 
-  let menuItems = [
+      let menuItems = [
 
-    {
-      icon:       'mdi-chevron-up',
-      'icon-alt': 'mdi-chevron-down',
-      text:       'Products',
-      children:   [
         {
-          icon: 'mdi-arrow-down-bold-box',
-          text: 'Find a product',
-          id:   'product-search'
-        }, {
-          icon: 'mdi-arrow-up-bold-box',
+          icon:       'mdi-chevron-up',
+          'icon-alt': 'mdi-chevron-down',
+          text:       'Products',
+          children:   [
+            {
+              icon: 'mdi-arrow-down-bold-box',
+              text: 'Find a product',
+              id:   'product-search'
+            }, {
+              icon: 'mdi-arrow-up-bold-box',
           text: 'Give away',
           id:   'product-serve'
         }
