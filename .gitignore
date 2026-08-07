@@ -24,4 +24,5 @@
 assets/js/crypto.bundle.js
 assets/js/crypto.bundle.min.jgs
 /logs/
-node_modules
+/node_modules
+/dist
