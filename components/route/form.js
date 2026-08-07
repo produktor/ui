@@ -11,7 +11,15 @@ import {PhotonApiClient} from '../photon-api-client.js';
 
   function featureCenter(feature) {
     if(!feature || !feature.geometry) return null;
-    return app.geo.utils.getFeatureCenter(feature);
+    const g = feature.geometry;
+    if(g.type === 'Point' && Array.isArray(g.coordinates) && g.coordinates.length >= 2) {
+      return {lon: Number(g.coordinates[0]), lat: Number(g.coordinates[1])};
+    }
+    try {
+      return window.app.geo.utils.getFeatureCenter(feature);
+    } catch (_) {
+      return null;
+    }
   }
 
   function featureLabel(feature) {
@@ -35,7 +43,7 @@ import {PhotonApiClient} from '../photon-api-client.js';
 
   function prepareFeatures(features) {
     (features || []).forEach(f => {
-      app.geo.utils.describeFeature(f);
+      window.app.geo.utils.describeFeature(f);
       f.id = featureKey(f) || f.id;
       if(!f.properties) f.properties = {};
       if(!f.properties.display_name) {
@@ -304,6 +312,7 @@ import {PhotonApiClient} from '../photon-api-client.js';
         this.routeError = null;
         this.routeInfo = null;
 
+        const root = this.app || window.app;
         if(!this.from || !this.to) {
           this.routeError = 'Choose both From and To.';
           return;
@@ -311,26 +320,28 @@ import {PhotonApiClient} from '../photon-api-client.js';
 
         const fromC = featureCenter(this.from);
         const toC = featureCenter(this.to);
-        if(!fromC || !toC) {
+        if(!fromC || !toC || !Number.isFinite(fromC.lon) || !Number.isFinite(toC.lon)) {
           this.routeError = 'Could not read coordinates for the selected places.';
           return;
         }
 
+        const profile = typeof this.profile === 'string' ? this.profile : 'driving';
+
         this.routing = true;
         try {
-          if(this.app && this.app.map && this.app.map.showRouteBetween) {
-            const info = await this.app.map.showRouteBetween(this.from, this.to, {
-              profile: this.profile,
-            });
-            if(info) {
-              this.routeInfo = info;
-            } else {
-              this.routeError = `No ${this.profileLabel.toLowerCase()} route found for these points.`;
-            }
+          if(!root || !root.map || typeof root.map.showRouteBetween !== 'function') {
+            throw new Error('Map routing API is not ready yet.');
+          }
+          const info = await root.map.showRouteBetween(this.from, this.to, {profile});
+          if(info) {
+            this.routeInfo = info;
+          } else {
+            this.routeError = `No ${this.profileLabel.toLowerCase()} route found for these points.`;
           }
         } catch (e) {
-          console.warn(e);
-          this.routeError = 'Routing failed. Try another mode or places in the covered area.';
+          console.warn('OSRM route failed', e);
+          const detail = e && e.message ? e.message : 'unknown error';
+          this.routeError = `Routing failed: ${detail}`;
         } finally {
           this.routing = false;
         }

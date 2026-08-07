@@ -5,12 +5,12 @@ export class OsrmApiClient {
    * @param {string} [config.profile]
    */
   constructor(config = {}) {
-    this.baseUrl = (config.baseUrl || 'https://osrm.produktor.mywire.org').replace(/\/$/, '');
+    this.baseUrl = (config.baseUrl || 'https://osrm.produktor.io').replace(/\/$/, '');
     this.profile = config.profile || 'driving';
   }
 
   /**
-   * Request a driving route between two lon/lat positions.
+   * Request a route between two lon/lat positions.
    *
    * @param {[number, number]} fromLonLat
    * @param {[number, number]} toLonLat
@@ -19,11 +19,24 @@ export class OsrmApiClient {
    */
   async route(fromLonLat, toLonLat, options = {}) {
     const url = this.buildRouteUrl(fromLonLat, toLonLat, options);
-    const response = await fetch(url.toString(), { cache: 'no-store' });
-    if(!response.ok) {
-      throw new Error(`OSRM request failed with ${response.status}`);
+    let response;
+    try {
+      response = await fetch(url.toString(), { cache: 'no-store' });
+    } catch (err) {
+      const msg = err && err.message ? err.message : String(err);
+      throw new Error(`OSRM network error: ${msg}`);
     }
-    return response.json();
+    let data = null;
+    try {
+      data = await response.json();
+    } catch (_) {
+      data = null;
+    }
+    if(!response.ok) {
+      const detail = data && (data.message || data.code) ? ` (${data.message || data.code})` : '';
+      throw new Error(`OSRM HTTP ${response.status}${detail}`);
+    }
+    return data;
   }
 
   /**

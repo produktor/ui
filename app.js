@@ -159,6 +159,9 @@ document.onreadystatechange = async () => { if(document.readyState !==
 
       versions: null,
 
+      /** Shared app helpers (map, geo, OSRM, …) */
+      app: window.app,
+
       /**  Last JSON API result */
       lastResult: null,
 
@@ -1002,23 +1005,38 @@ document.onreadystatechange = async () => { if(document.readyState !==
    */
   let showRouteBetween = app.map.showRouteBetween = async (fromFeature, toFeature, options = {}) => {
     const routeSource = map.getSource('osrm-route');
-    if(!routeSource || !fromFeature || !toFeature) return null;
+    if(!routeSource || !fromFeature || !toFeature) {
+      throw new Error('Route layer is not ready');
+    }
 
-    const fromC = app.geo.utils.getFeatureCenter(fromFeature);
-    const toC = app.geo.utils.getFeatureCenter(toFeature);
-    const from = [fromC.lon, fromC.lat];
-    const to = [toC.lon, toC.lat];
+    const pointCoords = (feature) => {
+      const g = feature && feature.geometry;
+      if(g && g.type === 'Point' && Array.isArray(g.coordinates)) {
+        return [Number(g.coordinates[0]), Number(g.coordinates[1])];
+      }
+      const c = app.geo.utils.getFeatureCenter(feature);
+      return [c.lon, c.lat];
+    };
+
+    const from = pointCoords(fromFeature);
+    const to = pointCoords(toFeature);
+    if(!from.every(Number.isFinite) || !to.every(Number.isFinite)) {
+      throw new Error('Invalid coordinates');
+    }
 
     if(Math.abs(from[0] - to[0]) < 1e-5 && Math.abs(from[1] - to[1]) < 1e-5) {
       clearRoute();
       return null;
     }
 
-    const profile = options.profile || 'driving';
+    const profile = (options && typeof options.profile === 'string' && options.profile)
+      ? options.profile
+      : 'driving';
     const data = await app.osrmApiClient.route(from, to, {profile});
     if(!data || data.code !== 'Ok' || !data.routes || !data.routes[0]) {
       clearRoute();
-      return null;
+      const reason = data && (data.message || data.code) ? String(data.message || data.code) : 'no route';
+      throw new Error(reason);
     }
 
     const route = data.routes[0];
@@ -1032,19 +1050,22 @@ document.onreadystatechange = async () => { if(document.readyState !==
     };
     routeSource.setData({type: 'FeatureCollection', features: [line]});
 
-    // Show both endpoints on the regions source
     map.getSource('nominatim-regions').setData({
       type:     'FeatureCollection',
       features: [fromFeature, toFeature].filter(Boolean),
     });
 
-    const bounds = app.geo.utils.getBoundsByCoordinates(line.geometry);
-    map.fitBounds(bounds, {
-      padding: 64,
-      maxZoom: 16,
-      animate: vue.state.isAnimated,
-      speed:   2,
-    });
+    try {
+      const bounds = app.geo.utils.getBoundsByCoordinates(line.geometry);
+      map.fitBounds(bounds, {
+        padding: 64,
+        maxZoom: 16,
+        animate: vue.state.isAnimated,
+        speed:   2,
+      });
+    } catch (e) {
+      console.warn('fitBounds failed', e);
+    }
 
     vue.currentFeature = toFeature;
 
