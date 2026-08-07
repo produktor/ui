@@ -36,20 +36,16 @@
 
 <div id="app" style="display: none">
 		<v-app id="inspire">
-		<div
-			class="map-top-chrome"
+		<v-btn
+			id="menu-toggle-btn"
+			class="menu-toggle-btn"
 			:style="{ left: drawer ? '266px' : '10px' }"
+			icon
+			@click.stop="drawer = !drawer"
+			aria-label="Open menu"
 		>
-			<v-btn
-				id="menu-toggle-btn"
-				class="menu-toggle-btn"
-				icon
-				@click.stop="drawer = !drawer"
-				aria-label="Open menu"
-			>
-				<v-icon>mdi-menu</v-icon>
-			</v-btn>
-		</div>
+			<v-icon>mdi-menu</v-icon>
+		</v-btn>
 		<v-navigation-drawer v-model="drawer" app height="100%" width="256">
 			<v-list flat>
 				<v-list-item class="produktor-header">
