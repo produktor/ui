@@ -38,15 +38,8 @@
 		<v-app id="inspire">
 		<div
 			v-if="!isShareCameraMode"
-			ref="mapTopSearch"
-			class="map-top-search"
-			:style="{
-				left: drawer ? '266px' : '10px',
-				'--right-panel-reserve': currentFeature ? '360px' : '0px',
-				'--map-search-width': drawer
-					? 'calc(100vw - 436px - var(--right-panel-reserve))'
-					: 'calc(100vw - 180px - var(--right-panel-reserve))'
-			}"
+			class="map-top-chrome"
+			:style="{ left: drawer ? '266px' : '10px' }"
 		>
 			<v-btn
 				id="menu-toggle-btn"
@@ -57,50 +50,6 @@
 			>
 				<v-icon>mdi-menu</v-icon>
 			</v-btn>
-
-			<v-btn
-				v-if="!isMapSearchOpen"
-				class="menu-toggle-btn map-search-toggle-btn"
-				icon
-				@click.stop="openMapSearch"
-				aria-label="Open map search"
-			>
-				<v-icon>mdi-magnify</v-icon>
-			</v-btn>
-
-			<v-autocomplete
-				v-else
-				ref="mapSearchAutocomplete"
-				v-model="mapSearchResult"
-				class="map-top-search-input"
-				:loading="isMapSearchLoading"
-				:items="mapSearchResults"
-				:search-input.sync="mapSearchInput"
-				placeholder="Santa Cruz de Tenerife"
-				prepend-inner-icon="mdi-magnify"
-				hide-no-data
-				hide-details
-				solo
-				flat
-				no-filter
-				return-object
-				item-text="title"
-				item-value="id"
-				:menu-props="{ offsetY: true, closeOnContentClick: true }"
-				@blur.native="onMapSearchBlur"
-				@keydown.esc.native="closeMapSearch"
-			>
-				<template v-slot:selection="data">
-					<template v-if="data && data.item">
-						{{ data.item.title || data.item.properties.name }}
-					</template>
-				</template>
-				<template slot="item" slot-scope="data">
-					<template v-if="data && data.item">
-						{{ data.item.title || data.item.properties.name }}
-					</template>
-				</template>
-			</v-autocomplete>
 		</div>
 		<v-navigation-drawer v-model="drawer" app height="100%" width="256">
 			<v-list flat>
