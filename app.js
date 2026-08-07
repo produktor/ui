@@ -993,13 +993,14 @@ document.onreadystatechange = async () => { if(document.readyState !==
   };
 
   /**
-   * Draw OSRM driving route between two features.
+   * Draw OSRM route between two features.
    *
    * @param {GeoJSON.Feature} fromFeature
    * @param {GeoJSON.Feature} toFeature
+   * @param {{profile?: string}} [options]
    * @return {Promise<{km: string, min: number, distance_m: number, duration_s: number}|null>}
    */
-  let showRouteBetween = app.map.showRouteBetween = async (fromFeature, toFeature) => {
+  let showRouteBetween = app.map.showRouteBetween = async (fromFeature, toFeature, options = {}) => {
     const routeSource = map.getSource('osrm-route');
     if(!routeSource || !fromFeature || !toFeature) return null;
 
@@ -1013,7 +1014,8 @@ document.onreadystatechange = async () => { if(document.readyState !==
       return null;
     }
 
-    const data = await app.osrmApiClient.route(from, to);
+    const profile = options.profile || 'driving';
+    const data = await app.osrmApiClient.route(from, to, {profile});
     if(!data || data.code !== 'Ok' || !data.routes || !data.routes[0]) {
       clearRoute();
       return null;

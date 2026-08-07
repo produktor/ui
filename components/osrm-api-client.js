@@ -30,11 +30,13 @@ export class OsrmApiClient {
    * @param {[number, number]} fromLonLat
    * @param {[number, number]} toLonLat
    * @param {Object} [options]
+   * @param {string} [options.profile]
    * @return {URL}
    */
   buildRouteUrl(fromLonLat, toLonLat, options = {}) {
+    const profile = options.profile || this.profile || 'driving';
     const coords = `${fromLonLat[0]},${fromLonLat[1]};${toLonLat[0]},${toLonLat[1]}`;
-    const url = new URL(`${this.baseUrl}/route/v1/${this.profile}/${coords}`);
+    const url = new URL(`${this.baseUrl}/route/v1/${profile}/${coords}`);
     url.searchParams.set('overview', options.overview || 'full');
     url.searchParams.set('geometries', options.geometries || 'geojson');
     if(options.steps != null) url.searchParams.set('steps', String(options.steps));

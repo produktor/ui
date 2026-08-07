@@ -26,6 +26,14 @@ body, html {
   margin-bottom: -4px;
 }
 
+.route-form__modes {
+  width: 100%;
+}
+
+.route-form__modes .v-btn {
+  flex: 1;
+}
+
 #inspire .map-full-height {
   padding: 0;
   min-height: 100vh;
