@@ -123,6 +123,7 @@ document.onreadystatechange = async () => { if(document.readyState !==
     net:  await import(`./components/net.js?${moduleCacheBuster}`),
     html: await import(`./components/html.js?${moduleCacheBuster}`),
     photonApiClient: new (await import(`./components/photon-api-client.js?${moduleCacheBuster}`)).PhotonApiClient(),
+    osrmApiClient: new (await import(`./components/osrm-api-client.js?${moduleCacheBuster}`)).OsrmApiClient(),
     loadScriptOnce
   };
 
@@ -273,6 +274,8 @@ document.onreadystatechange = async () => { if(document.readyState !==
       isMapSearchLoading: false,
       mapSearchRequestId: 0,
       isMapSearchOpen: false,
+      /** Previous search pick — OSRM route origin */
+      routeFrom: null,
 
       // Settings group expanded state
       settingsOpen: false,
@@ -528,7 +531,12 @@ document.onreadystatechange = async () => { if(document.readyState !==
 
         this._mapSearchTimer = window.setTimeout(async () => {
           try {
-            const response = await app.photonApiClient.search(query, { limit: 8 });
+            const center = map && map.getCenter ? map.getCenter() : null;
+            const response = await app.photonApiClient.search(query, {
+              limit: 8,
+              lon: center ? center.lng : -16.2518,
+              lat: center ? center.lat : 28.4636,
+            });
             let results = response && response.features ? response.features : [];
             results.forEach(app.geo.utils.describeFeature);
             if(this.mapSearchRequestId !== requestId) return;
@@ -1077,6 +1085,62 @@ document.onreadystatechange = async () => { if(document.readyState !==
       .addTo(map);
   }
 
+  /**
+   * Draw OSRM driving route from previous pick (or map center) to feature.
+   *
+   * @param {GeoJSON.Feature} feature
+   */
+  let showRouteTo = app.map.showRouteTo = async (feature) => {
+    const routeSource = map.getSource('osrm-route');
+    if(!routeSource || !feature || !feature.geometry) return;
+
+    const dest = app.geo.utils.getFeatureCenter(feature);
+    const to = [dest.lon, dest.lat];
+    const fromCenter = map.getCenter();
+    const from = vue.routeFrom
+      ? [vue.routeFrom.lon, vue.routeFrom.lat]
+      : [fromCenter.lng, fromCenter.lat];
+
+    if(Math.abs(from[0] - to[0]) < 1e-5 && Math.abs(from[1] - to[1]) < 1e-5) {
+      routeSource.setData({type: 'FeatureCollection', features: []});
+      return;
+    }
+
+    try {
+      const data = await app.osrmApiClient.route(from, to);
+      if(!data || data.code !== 'Ok' || !data.routes || !data.routes[0]) {
+        routeSource.setData({type: 'FeatureCollection', features: []});
+        return;
+      }
+      const route = data.routes[0];
+      const line = {
+        type:       'Feature',
+        properties: {
+          distance_m: Math.round(route.distance),
+          duration_s: Math.round(route.duration),
+        },
+        geometry: route.geometry,
+      };
+      routeSource.setData({type: 'FeatureCollection', features: [line]});
+      const km = (route.distance / 1000).toFixed(1);
+      const min = Math.round(route.duration / 60);
+      if(popup) {
+        const el = popup.getElement();
+        if(el) {
+          const box = el.querySelector('div');
+          if(box && !box.dataset.osrmMeta) {
+            box.dataset.osrmMeta = '1';
+            box.insertAdjacentHTML('beforeend',
+              `<div style="margin-top:6px;opacity:.85">Route: ${km} km · ~${min} min</div>`);
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('OSRM route failed', e);
+      routeSource.setData({type: 'FeatureCollection', features: []});
+    }
+  };
+
   let showFeature = app.map.showFeature = (feature) => {
     // window.dispatchEvent(new Event('resize'));
 
@@ -1093,6 +1157,9 @@ document.onreadystatechange = async () => { if(document.readyState !==
     vue.currentFeature = feature;
 
     map.getSource('nominatim-regions').setData(featureCollection);
+    showRouteTo(feature).finally(() => {
+      vue.routeFrom = app.geo.utils.getFeatureCenter(feature);
+    });
 
     const isPointGeometry = feature.geometry && feature.geometry.type === 'Point';
     let bounds = app.geo.utils.getBoundsByCoordinates(feature.geometry);
@@ -1173,6 +1240,26 @@ document.onreadystatechange = async () => { if(document.readyState !==
     map.addSource('nominatim-regions', {
       type:       'geojson',
       data:       { type: 'FeatureCollection', features: [] }
+    });
+
+    map.addSource('osrm-route', {
+      type: 'geojson',
+      data: { type: 'FeatureCollection', features: [] }
+    });
+
+    map.addLayer({
+      id:     'osrm-route-line',
+      type:   'line',
+      source: 'osrm-route',
+      layout: {
+        'line-join': 'round',
+        'line-cap':  'round'
+      },
+      paint:  {
+        'line-color':   '#1e88e5',
+        'line-width':   5,
+        'line-opacity': 0.85
+      }
     });
 
     if(app.vue.state.theme === "dark") {
