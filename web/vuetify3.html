@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Produktor V3.0</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+
+    <!-- HTML2Canvas allows to make screenshots of the page -->
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+
+        // Application logic
+        new Vue({
+          el:      '#app',
+          vuetify: new Vuetify(),
+          // on mount
+          mounted() {
+            // get webcam stream
+            this.getWebcamStream();
+          },
+          data:    {
+            bobr: (() => Math.random())()
+          },
+          watch:   {
+            bobr() {
+              return Math.random();
+            }
+          },
+          methods: {
+            onchange() {
+              this.bobr = Math.random();
+            },
+            getWebcamStream() {
+              const video = document.querySelector("#videoElement");
+              // Get webcam stream from the browser
+              navigator.getMedia = (navigator.getUserMedia ||
+                                    navigator.webkitGetUserMedia ||
+                                    navigator.mozGetUserMedia ||
+                                    navigator.msGetUserMedia);
+
+              // Try to get the webcam stream
+              if(navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({video: true})
+                  .then(stream => {
+                    video.srcObject = stream;
+                  })
+                  .catch(err => {
+                    console.log("Something went wrong!",err);
+                  });
+              }
+            },
+            getWebcamScreenShot() {
+              html2canvas(document.querySelector("#videoElement")).then(canvas => {
+                let container = document.querySelector("#screenShot");
+                container.appendChild(canvas);
+              }).catch((err) => {
+                console.log(err);
+              });
+            }
+          },
+
+        });
+
+      });
+    </script>
+</head>
+<body>
+
+<!-- Application template -->
+<div id="app">
+    <v-app>
+        <v-icon>mdi-home</v-icon>
+        <v-main>
+            <v-container>Hello {{bobr}}</v-container>
+
+            <!-- Upload image -->
+            <v-file-input
+                    prepend-icon="mdi-upload"
+                    label="Upload image"
+                    persistent-hint
+                    accept="image/*"
+                    chips
+                    multiple
+                    show-size
+                    counter
+                    outlined
+                    ref="file"
+            ></v-file-input>
+
+            <!-- add webcam view -->
+            <v-card
+                    class="mx-auto"
+                    outlined
+
+
+            >
+                <video autoplay="true" id="videoElement" style="width: 100%; height: 100%"></video>
+            </v-card>
+            <v-divider></v-divider>
+            <v-card
+                    class="mx-auto"
+                    outlined
+            >
+                <div  style="width: 100%; height: 100%; min-width: 320px; min-height: 240px" id="screenShot"></div>
+
+            </v-card>
+
+        </v-main>
+        <v-spacer></v-spacer>
+
+        <!-- Bottom right button navigation  -->
+
+        <div class="d-flex flex-row-reverse mb-6 bg-surface-variant">
+            <v-sheet class="ma-2 pa-2">
+                <v-btn
+                        fab
+                        dark
+                        color="primary"
+                        @click="getWebcamScreenShot()"
+                >
+                    <v-icon>mdi-plus</v-icon>
+                </v-btn>
+            </v-sheet>
+        </div>
+    </v-app>
+</div>
+
+</body>
+</html>
