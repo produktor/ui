@@ -16,57 +16,45 @@
     },
     template: `
                 <div class="about-purpose pa-3">
-                  <h3 class="mb-3">Purpose</h3>
+                  <h3 class="mb-3">Demo</h3>
                   <p class="body-2 mb-3">
-                    Produktor is a map-based platform for sharing and discovering products and services
-                    locally. It connects people who want to give away items with those looking to find them,
-                    and enables service providers and seekers to find each other.
-                  </p>
-                  <p class="body-2 mb-3">
-                    The interactive map lets you search by location, browse offerings in your area,
-                    and visualize where goods and services are available. Built for local communities
-                    and sustainable sharing.
+                    This is a working demo of a GIS map UI for
+                    <a href="https://produktor.io" target="_blank" rel="noopener">produktor.io</a>.
+                    It is not a finished product — only a live showcase of how a map app can look and behave
+                    in that stack.
                   </p>
 
-                  <h3 class="mb-3 mt-4">Project Team</h3>
-                  <p class="body-2 mb-3">
-                    We are a engineer and designer team  with over 15 years of hands-on experience delivering
-                    reliable technical solutions across software and hardware domains.
-                  </p>
+                  <h3 class="mb-3 mt-4">What you can do</h3>
+                  <ul class="body-2 mb-3 pl-4">
+                    <li class="mb-2">Browse an interactive map (pan, zoom, tilt, theme and layer toggles).</li>
+                    <li class="mb-2">Search places and plan a driving route from A to B.</li>
+                    <li class="mb-2">Inspect place details on the map after a search or route.</li>
+                  </ul>
 
-                  <p class="body-2 mb-3">
-                    Our background includes project engineering in manufacturing, full-stack development
-                    (front-end and back-end), data scraping and analysis, embedded systems for drone
-                    navigation, AI-based object recognition, and business process automation using modern
-                    AI tools.
+                  <h3 class="mb-3 mt-4">Credits &amp; licences</h3>
+                  <p class="body-2 mb-2">
+                    Map data ©
+                    <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>
+                    contributors (ODbL).
                   </p>
-
-                  <p class="body-2 mb-3">
-                    Our team includes a seniors in GIS Fullstack/DevOps Engineering based in Tenerife, with
-                    overaal 15+ years of experience as a senior software engineer and solution architect.
-                    We design and operate reliable, scalable, high-performance local systems for
-                    terabyte-scale geospatial data, with specialization in self-hosted OSM/OSS stacks,
-                    ETL pipelines, and low-latency backends, including sub-10 ms scenarios.
+                  <p class="body-2 mb-2">
+                    Geocoding and routing use OpenStreetMap-based open services
+                    (<a href="https://github.com/komoot/photon" target="_blank" rel="noopener">Photon</a>,
+                    <a href="https://project-osrm.org/" target="_blank" rel="noopener">OSRM</a>).
                   </p>
-
-                  <p class="body-2 mb-3">
-                    Our GIS and platform engineering delivery covers spatial databases and end-to-end
-                    implementation across data, backend, frontend, and operations - including PostGIS/
-                    PostgreSQL, SpatiaLite, Oracle Spatial, MBTiles, and vector tile workflows - helping
-                    organizations avoid big-tech lock-in while retaining on-premise operational control.
+                  <p class="body-2 mb-2">
+                    Map rendering:
+                    <a href="https://maplibre.org/" target="_blank" rel="noopener">MapLibre GL</a>
+                    (BSD). Styles based on OpenMapTiles /
+                    <a href="https://github.com/maputnik/osm-liberty" target="_blank" rel="noopener">OSM Liberty</a>.
                   </p>
-
-                  <p class="body-2 mb-3">
-                    We focus on practical results: clear architecture, clean implementation, and systems
-                    that work reliably in real conditions. We are comfortable taking ownership of complex
-                    tasks - from idea to deployment - and delivering solutions that clients can depend on.
+                  <p class="body-2 mb-4">
+                    UI:
+                    <a href="https://vuejs.org/" target="_blank" rel="noopener">Vue.js</a>
+                    and
+                    <a href="https://vuetifyjs.com/" target="_blank" rel="noopener">Vuetify</a>
+                    (MIT).
                   </p>
-                  <v-divider class="my-3"></v-divider>
-                  <p class="body-2 mb-4">Don't hesitate to contact us via:
-                   <a href="https://t.me/eSIider" target="_blank" rel="noopener" class="body-2">Telegram</a>
-                  or email: <a href="mailto:esider@gmail.com" target="_blank" rel="noopener" class="body-2">esider@gmail.com</a>
-                  </p>
-
                 </div>
               `,
   });

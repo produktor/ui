@@ -95,39 +95,23 @@ document.onreadystatechange = async () => { if(document.readyState !==
       ],
     },
 
-    { icon:       'mdi-chevron-up', 'icon-alt': 'mdi-chevron-down', text:
-      'Goods',
-      model:      false,
-      children:   [
-        {
-          icon: 'mdi-arrow-down-bold-box',
-          text: 'Search',
-          id:   'product-search'
-        }, {
-          icon: 'mdi-arrow-up-bold-box',
-          text: 'Share',
-          id:   'product-serve'
-        }
-      ],
-    },
-    {
-      icon:       'mdi-chevron-up',
-      'icon-alt': 'mdi-chevron-down',
-      text:       'Service',
-      onDebug:    true,
-      children:   [
-        {
-          icon: 'mdi-arrow-down-bold-box-outline',
-          text: 'Find a service',
-          id:   'service-receive'
-        },
-        {
-          icon: 'mdi-arrow-up-bold-box-outline',
-          text: 'Provide a service',
-          id:   'service-serve'
-        }
-      ],
-    },
+    // Deferred (not production-ready): Goods / Service / camera share.
+    // Keep components under components/product|service for later.
+    // {
+    //   text: 'Goods',
+    //   children: [
+    //     { icon: 'mdi-arrow-down-bold-box', text: 'Search', id: 'product-search' },
+    //     { icon: 'mdi-arrow-up-bold-box', text: 'Share', id: 'product-serve' },
+    //   ],
+    // },
+    // {
+    //   text: 'Service',
+    //   onDebug: true,
+    //   children: [
+    //     { icon: 'mdi-arrow-down-bold-box-outline', text: 'Find a service', id: 'service-receive' },
+    //     { icon: 'mdi-arrow-up-bold-box-outline', text: 'Provide a service', id: 'service-serve' },
+    //   ],
+    // },
 
   ];
 
